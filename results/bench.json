@@ -1,0 +1,42 @@
+{
+ "machine": "x86_64, 80 CPUs, Python 3.13.9",
+ "rsa": [
+  {
+   "bits": 2048,
+   "blind_ms": 0.42617227882146835,
+   "blind_sign_ms": 5.393157713115215,
+   "finalize_ms": 0.047773122787475586,
+   "verify_ms": 0.038271769881248474,
+   "token_bytes": 320
+  },
+  {
+   "bits": 3072,
+   "blind_ms": 0.8492739871144295,
+   "blind_sign_ms": 15.912954695522785,
+   "finalize_ms": 0.07570721209049225,
+   "verify_ms": 0.057268887758255005,
+   "token_bytes": 448
+  },
+  {
+   "bits": 4096,
+   "blind_ms": 1.4144284650683403,
+   "blind_sign_ms": 35.687584429979324,
+   "finalize_ms": 0.11398270726203918,
+   "verify_ms": 0.08297152817249298,
+   "token_bytes": 576
+  }
+ ],
+ "hpke": {
+  "seal_ms": 0.09749829769134521,
+  "open_ms": 0.09582191705703735,
+  "trial_fail_ms": 0.09707920253276825,
+  "alert_bytes": 213
+ },
+ "e2e": {
+  "enrol_per_token_ms": 6.909990068525076,
+  "submit_ms": 5.028723739087582,
+  "lab_100rec_x_1000clin_s": 5.694015521556139,
+  "scan_1000alerts_50keys_s": 4.070140907540917,
+  "record_json_bytes": 6695
+ }
+}

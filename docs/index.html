@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>anonsurv: share the genome, not the name</title>
+<meta name="description" content="An open, low-cost protocol that lets food companies share pathogen genomes with public health anonymously but with proof of authorisation.">
+<style>
+:root{
+  --bg:#fbfaf7; --fg:#1d2327; --muted:#5b6670; --line:#e3e0d8; --card:#ffffff;
+  --teal:#177370; --teal-soft:#e3f5f4; --amber:#b86e00; --amber-soft:#fff3dc;
+  --violet:#5b4b9a; --violet-soft:#efecf8; --red:#b3261e; --code:#f3f1ec;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#121517; --fg:#e7eaec; --muted:#9aa6ae; --line:#2b3236; --card:#1a1f22;
+    --teal:#5cc7c1; --teal-soft:#16302f; --amber:#f0b04a; --amber-soft:#33270f;
+    --violet:#a99bea; --violet-soft:#25213a; --red:#ef8a80; --code:#20262a;
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+header.hero{padding:72px 0 40px;border-bottom:1px solid var(--line)}
+.kicker{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:700}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(34px,6vw,56px);line-height:1.08;margin:.3em 0 .35em;font-weight:700}
+.lead{font-size:clamp(17px,2.2vw,20px);color:var(--muted);max-width:44em;margin:0}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:28px;font-size:14px}
+nav.toc a{color:var(--teal);text-decoration:none;border-bottom:1px solid transparent}
+nav.toc a:hover{border-color:var(--teal)}
+section{padding:48px 0;border-bottom:1px solid var(--line)}
+h2{font-family:Georgia,"Times New Roman",serif;font-size:30px;margin:0 0 14px}
+h3{font-size:18px;margin:22px 0 6px}
+p{margin:0 0 14px;max-width:46em}
+.grid{display:grid;gap:14px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.g5{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card h3{margin-top:0}
+.card p{font-size:15px;margin:0;color:var(--muted)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;margin-bottom:8px}
+.t-teal{background:var(--teal-soft);color:var(--teal)}
+.t-amber{background:var(--amber-soft);color:var(--amber)}
+.t-violet{background:var(--violet-soft);color:var(--violet)}
+.callout{border-left:4px solid var(--teal);background:var(--teal-soft);padding:14px 18px;border-radius:0 8px 8px 0;margin:18px 0;max-width:46em}
+.callout.warn{border-color:var(--amber);background:var(--amber-soft)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:15px;min-width:560px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+td.yes{color:var(--teal);font-weight:600}
+td.no{color:var(--red);font-weight:600}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+pre{background:var(--code);padding:14px 16px;border-radius:8px;overflow-x:auto;margin:0 0 14px}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px}
+ol.steps li{counter-increment:s;position:relative;padding:14px 16px 14px 58px;background:var(--card);border:1px solid var(--line);border-radius:10px}
+ol.steps li::before{content:counter(s);position:absolute;left:16px;top:13px;width:28px;height:28px;border-radius:50%;
+  background:var(--teal);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+ol.steps b{display:block;margin-bottom:2px}
+ol.steps span{color:var(--muted);font-size:15px}
+.diagram{margin:22px 0 6px}
+.diagram svg{display:block;width:100%;height:auto;min-width:640px}
+.diagram text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;fill:var(--fg)}
+.diagram .muted{fill:var(--muted)}
+.toy{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.toy label{font-size:13px;color:var(--muted);display:block}
+.toy select,.toy input{width:100%;font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}
+.out{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;max-width:46em}
+.out dt{color:var(--muted)}
+.out dd{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace}
+.ok{color:var(--teal);font-weight:700}
+.bad{color:var(--red);font-weight:700}
+
+.stepper{--st:var(--teal)}
+.diagram .st{opacity:.22;transition:opacity .25s}
+.diagram .st.done{opacity:.5}
+.diagram .st.on{opacity:1}
+.diagram .st.on text{font-weight:700}
+.diagram .lane{transition:opacity .25s}
+.js .diagram .lane.dim{opacity:.45}
+.controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 10px}
+.controls button{font:inherit;font-weight:600;padding:8px 16px;white-space:nowrap;border-radius:8px;border:1px solid var(--teal);background:var(--teal);color:#fff;cursor:pointer}
+.controls button:disabled{opacity:.35;cursor:default}
+.controls button#prev{background:transparent;color:var(--teal)}
+.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;flex:1}
+@media (max-width:560px){.controls .lbl{display:none}.controls button{padding:8px 14px}.dots{gap:5px}}
+.dots button{width:12px;height:12px;padding:0;border-radius:50%;border:1px solid var(--teal);background:transparent}
+.dots button[aria-selected="true"]{background:var(--teal)}
+.cards{display:grid;gap:12px}
+.stepcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.js .stepcard{display:none}
+.js .stepcard.on{display:block;animation:fade .25s}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.stephead h3{margin:2px 0 8px}
+.stepno{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--teal)}
+.know{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:6px}
+.know ul{list-style:none;margin:0;padding:10px 12px;border-radius:8px;font-size:14.5px}
+.know li{margin:2px 0}
+.know .sees{background:var(--teal-soft)}
+.know .sees li::before{content:"\25CF  ";color:var(--teal)}
+.know .notsees{background:var(--amber-soft)}
+.know .notsees li::before{content:"\00D7  ";color:var(--amber)}
+.know ul:empty{display:none}
+footer{padding:36px 0 56px;color:var(--muted);font-size:14px}
+footer a, section a{color:var(--teal)}
+@media (max-width:520px){ header.hero{padding-top:44px} section{padding:36px 0} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">anonsurv · proof of concept</div>
+    <h1>Share the genome,<br>not the name.</h1>
+    <p class="lead">An open, low-cost protocol that lets food companies send pathogen genomes to public
+    health <strong>anonymously but with proof that they are authorised</strong>, and get a private warning
+    back if their strain matches human cases. No blockchain, no licences, only open standards.</p>
+    <nav class="toc" aria-label="Contents">
+      <a href="#problem">Problem</a><a href="#actors">Actors</a><a href="#how">Step by step</a>
+      <a href="#token">The anonymous token</a><a href="#knows">Who knows what</a>
+      <a href="#alerts">Private alerts</a><a href="#metadata">Metadata</a><a href="#deploy">Where it runs</a>
+      <a href="#standards">Standards</a><a href="#try">Try it</a><a href="#limits">Limits</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section id="problem"><div class="wrap">
+  <h2>The problem</h2>
+  <p>Food companies isolate and increasingly sequence <em>Listeria</em>, <em>Salmonella</em>, STEC and other
+  pathogens from their plants and products. A plant isolate that matches human cases is often the strongest
+  evidence in an outbreak investigation. Yet these genomes rarely reach public health: once a sequence can be
+  attributed to a company, it can bring inspections, recalls, liability and bad press.</p>
+  <p>Today the data arrive only when authorities ask for them during an investigation. By then, the
+  early-warning value is gone. Anonymising through a trusted intermediary helps, but anonymity then depends on
+  that intermediary: if it can be compelled to disclose, anonymity is a promise, not a guarantee.</p>
+  <div class="callout"><strong>The idea.</strong> Make anonymity a property of the <em>protocol</em>, not of
+  whoever runs it. A company proves "I am an authorised food business" without saying which one, using
+  cryptography standardised by the IETF.</div>
+</div></section>
+
+<section id="actors"><div class="wrap">
+  <h2>Actors</h2>
+  <div class="grid g5">
+    <div class="card"><span class="tag t-violet">contributor</span><h3>Food company</h3><p>Sequences isolates; wants early warning without being named.</p></div>
+    <div class="card"><span class="tag t-teal">gatekeeper</span><h3>Issuer</h3><p>Checks the company is in the official register; signs tokens it cannot read.</p></div>
+    <div class="card"><span class="tag t-teal">store</span><h3>Platform</h3><p>Accepts records with a valid, unused token. Stores no identity.</p></div>
+    <div class="card"><span class="tag t-amber">analysis</span><h3>Public-health lab</h3><p>Clusters records with human cases; sends encrypted alerts.</p></div>
+    <div class="card"><span class="tag t-violet">governance</span><h3>Consortium</h3><p>Independent bodies that audit the log and, optionally, can jointly lift anonymity.</p></div>
+  </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <h2>How it works, step by step</h2>
+  <p>Follow one cheese maker from enrolment to a private warning. Use the buttons or the &larr; &rarr; keys.</p>
+  <div class="stepper" id="stepper">
+    <div class="diagram scroll" role="img" aria-label="Sequence diagram of the ten protocol steps; the current step is highlighted.">
+<svg viewBox="0 0 900 488" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--teal)"/></marker></defs>
+<g class="lane" data-lane="C"><rect x="10" y="8" width="160" height="40" rx="8" fill="var(--violet-soft)" stroke="var(--violet)"/><text x="90" y="33" text-anchor="middle" font-size="14" font-weight="700">Food company</text><line x1="90" y1="48" x2="90" y2="484" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 5"/></g>
+<g class="lane" data-lane="I"><rect x="190" y="8" width="160" height="40" rx="8" fill="var(--teal-soft)" stroke="var(--teal)"/><text x="270" y="33" text-anchor="middle" font-size="14" font-weight="700">Issuer</text><line x1="270" y1="48" x2="270" y2="484" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 5"/></g>
+<g class="lane" data-lane="P"><rect x="370" y="8" width="160" height="40" rx="8" fill="var(--teal-soft)" stroke="var(--teal)"/><text x="450" y="33" text-anchor="middle" font-size="14" font-weight="700">Platform</text><line x1="450" y1="48" x2="450" y2="484" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 5"/></g>
+<g class="lane" data-lane="L"><rect x="550" y="8" width="160" height="40" rx="8" fill="var(--amber-soft)" stroke="var(--amber)"/><text x="630" y="33" text-anchor="middle" font-size="14" font-weight="700">Public-health lab</text><line x1="630" y1="48" x2="630" y2="484" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 5"/></g>
+<g class="lane" data-lane="K"><rect x="730" y="8" width="160" height="40" rx="8" fill="var(--violet-soft)" stroke="var(--violet)"/><text x="810" y="33" text-anchor="middle" font-size="14" font-weight="700">Consortium</text><line x1="810" y1="48" x2="810" y2="484" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 5"/></g>
+<g class="st" data-s="1"><line x1="90" y1="92" x2="266" y2="92" stroke="var(--st)" stroke-width="2" marker-end="url(#ah2)"/><text x="180.0" y="86" text-anchor="middle" font-size="12.5">log in with real identity</text><circle cx="22" cy="90" r="11" fill="var(--st)"/><text x="22" y="94.5" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bg)" class="num">1</text></g>
+<g class="st" data-s="2"><rect x="104" y="118" width="285" height="26" rx="6" fill="var(--card)" stroke="var(--st)"/><text x="114" y="135" font-size="12.5">make tokens + sealed envelopes</text><circle cx="22" cy="130" r="11" fill="var(--st)"/><text x="22" y="134.5" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bg)" class="num">2</text></g>
+<g class="st" data-s="3"><line x1="270" y1="172" x2="94" y2="172" stroke="var(--st)" stroke-width="2" marker-end="url(#ah2)"/><text x="180.0" y="166" text-anchor="middle" font-size="12.5">envelopes signed blind</text><circle cx="22" cy="170" r="11" fill="var(--st)"/><text x="22" y="174.5" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bg)" class="num">3</text></g>
+<g class="st" data-s="4"><rect x="104" y="198" width="285" height="26" rx="6" fill="var(--card)" stroke="var(--st)"/><text x="114" y="215" font-size="12.5">open envelopes → signed tokens</text><circle cx="22" cy="210" r="11" fill="var(--st)"/><text x="22" y="214.5" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bg)" class="num">4</text></g>
+<g class="st" data-s="5"><rect x="104" y="238" width="285" height="26" rx="6" fill="var(--card)" stroke="var(--st)"/><text x="114" y="255" font-size="12.5">profile + coarse metadata + one-time key</text><circle cx="22" cy="250" r="11" fill="var(--st)"/><text x="22" y="254.5" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bg)" class="num">5</text></g>
+<g class="st" data-s="6"><line x1="90" y1="292" x2="446" y2="292" stroke="var(--st)" stroke-width="2" marker-end="url(#ah2)"/><text x="270.0" y="286" text-anchor="middle" font-size="12.5">anonymous record + token (via relay)</text><circle cx="22" cy="290" r="11" fill="var(--st)"/><text x="22" y="294.5" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bg)" class="num">6</text></g>
+<g class="st" data-s="7"><line x1="450" y1="332" x2="626" y2="332" stroke="var(--st)" stroke-width="2" marker-end="url(#ah2)"/><text x="540.0" y="326" text-anchor="middle" font-size="12.5">record, no identity</text><circle cx="22" cy="330" r="11" fill="var(--st)"/><text x="22" y="334.5" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bg)" class="num">7</text></g>
+<g class="st" data-s="8"><line x1="630" y1="372" x2="454" y2="372" stroke="var(--st)" stroke-width="2" marker-end="url(#ah2)"/><text x="540.0" y="366" text-anchor="middle" font-size="12.5">encrypted alert on bulletin</text><circle cx="22" cy="370" r="11" fill="var(--st)"/><text x="22" y="374.5" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bg)" class="num">8</text></g>
+<g class="st" data-s="9"><line x1="450" y1="412" x2="94" y2="412" stroke="var(--st)" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ah2)"/><text x="270.0" y="406" text-anchor="middle" font-size="12.5">everyone downloads all alerts</text><circle cx="22" cy="410" r="11" fill="var(--st)"/><text x="22" y="414.5" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bg)" class="num">9</text></g>
+<g class="st" data-s="10"><line x1="810" y1="452" x2="454" y2="452" stroke="var(--st)" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ah2)"/><text x="630.0" y="446" text-anchor="middle" font-size="12.5">t of n agree: open one record</text><circle cx="22" cy="450" r="11" fill="var(--st)"/><text x="22" y="454.5" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bg)" class="num">10</text></g>
+</svg>
+    </div>
+    <div class="controls" hidden>
+      <button type="button" id="prev" aria-label="Previous step">&larr;<span class="lbl"> Previous</span></button>
+      <div class="dots" id="dots" role="tablist" aria-label="Steps"></div>
+      <button type="button" id="next" aria-label="Next step"><span class="lbl">Next </span>&rarr;</button>
+    </div>
+    <div class="cards">
+<article class="stepcard" data-step="1" id="step-1">
+  <div class="stephead"><span class="stepno">Step 1 of 10</span><h3>The company logs in</h3></div>
+  <p>A cheese maker in Abruzzo (region ITF1, category dairy) logs in to the issuer with its real identity. The issuer checks that it is in the official register of food establishments and that it has not used up its yearly quota (e.g. 50 tokens).</p>
+  <div class="know"><ul class="sees"><li><b>Food company</b> sees its own identity</li><li><b>Issuer</b> sees who the company is, how many tokens it asks for</li></ul><ul class="notsees"><li><b>Issuer</b> does not see anything about future submissions</li></ul></div>
+</article>
+<article class="stepcard" data-step="2" id="step-2">
+  <div class="stephead"><span class="stepno">Step 2 of 10</span><h3>Tokens are made at home</h3></div>
+  <p>On its own computer the client draws 50 random tokens and, for each, a secret random number r. It seals each token in an “envelope”: b = token · rᵉ mod n. The tokens and the r values never leave the company.</p>
+  <div class="know"><ul class="sees"><li><b>Food company</b> sees tokens and secret r values</li></ul><ul class="notsees"><li><b>Issuer</b> does not see the tokens</li><li><b>Platform</b> does not see anything yet</li></ul></div>
+</article>
+<article class="stepcard" data-step="3" id="step-3">
+  <div class="stephead"><span class="stepno">Step 3 of 10</span><h3>The issuer signs without looking</h3></div>
+  <p>The company sends the 50 envelopes. To the issuer they look like random numbers. It signs each one with its private key and sends them back, and records only one fact: “this company received 50 tokens”.</p>
+  <div class="know"><ul class="sees"><li><b>Issuer</b> sees 50 random-looking envelopes, a counter</li></ul><ul class="notsees"><li><b>Issuer</b> does not see the tokens, or the signatures the company will end up with</li></ul></div>
+</article>
+<article class="stepcard" data-step="4" id="step-4">
+  <div class="stephead"><span class="stepno">Step 4 of 10</span><h3>The company opens the envelopes</h3></div>
+  <p>Dividing by r removes the envelope and leaves a valid issuer signature on each token. The client checks each signature against the issuer’s single public key, published in the log, then throws r away. The tokens wait days or weeks before use, so times cannot be matched.</p>
+  <div class="know"><ul class="sees"><li><b>Food company</b> sees 50 signed tokens</li></ul><ul class="notsees"><li><b>Issuer</b> does not see which signed token came from which envelope: mathematically impossible</li></ul></div>
+</article>
+<article class="stepcard" data-step="5" id="step-5">
+  <div class="stephead"><span class="stepno">Step 5 of 10</span><h3>An isolate is sequenced</h3></div>
+  <p>Months later environmental monitoring finds Listeria. The contract lab sequences it and the client computes the cgMLST profile (1748 alleles). Metadata are reduced to species, month, region and category, and generalised if fewer than k = 5 companies share them. The client also makes a fresh key pair for this record only.</p>
+  <div class="know"><ul class="sees"><li><b>Food company</b> sees everything about its isolate</li></ul><ul class="notsees"><li><b>Platform</b> does not see the exact date, the plant, the product</li></ul></div>
+</article>
+<article class="stepcard" data-step="6" id="step-6">
+  <div class="stephead"><span class="stepno">Step 6 of 10</span><h3>Anonymous submission</h3></div>
+  <p>The client sends token, signature, profile, coarse metadata and the one-time public key through a relay that hides its network address. The platform checks the signature with the issuer’s public key, checks the token was never used, checks k-anonymity, then stores the record and appends its hash to the log.</p>
+  <div class="know"><ul class="sees"><li><b>Platform</b> sees a valid token, a profile, ‘Listeria, 2026-10, ITF1, dairy’</li></ul><ul class="notsees"><li><b>Platform</b> does not see who sent it</li><li><b>Issuer</b> does not see that this token was spent by this company</li></ul></div>
+</article>
+<article class="stepcard" data-step="7" id="step-7">
+  <div class="stephead"><span class="stepno">Step 7 of 10</span><h3>Public health clusters</h3></div>
+  <p>The lab compares the profile with human cases. Here it is within 7 alleles of three patients, the cgMLST threshold for Listeria. The genome was not altered, so detection is as good as with identified data.</p>
+  <div class="know"><ul class="sees"><li><b>Public-health lab</b> sees a record in a cluster with human cases</li></ul><ul class="notsees"><li><b>Public-health lab</b> does not see which company it belongs to</li></ul></div>
+</article>
+<article class="stepcard" data-step="8" id="step-8">
+  <div class="stephead"><span class="stepno">Step 8 of 10</span><h3>A private alert</h3></div>
+  <p>The lab encrypts an alert to the one-time key that came with the record (HPKE) and posts it on a public bulletin. The ciphertext looks the same as every other alert on the bulletin.</p>
+  <div class="know"><ul class="sees"><li><b>Public-health lab</b> sees that it sent an alert to record X</li></ul><ul class="notsees"><li><b>Platform</b> does not see who can read it</li></ul></div>
+</article>
+<article class="stepcard" data-step="9" id="step-9">
+  <div class="stephead"><span class="stepno">Step 9 of 10</span><h3>Only one company can read it</h3></div>
+  <p>Every company downloads the whole bulletin and tries its own keys. Only the cheese maker’s key fits. It can now act: clean, investigate, test product, contact the authority, before the cluster becomes public. Because everyone downloads everything, nobody learns who got an alert.</p>
+  <div class="know"><ul class="sees"><li><b>Food company</b> sees “your isolate matches human cases”</li></ul><ul class="notsees"><li><b>Platform</b> does not see who opened which alert</li><li><b>Public-health lab</b> does not see who opened which alert</li></ul></div>
+</article>
+<article class="stepcard" data-step="10" id="step-10">
+  <div class="stephead"><span class="stepno">Step 10 of 10</span><h3>Optional: lifting anonymity</h3></div>
+  <p>Only if the system is set up with an identity escrow, and only in a serious outbreak under published rules, at least t of the n consortium members (e.g. ministry, institute, region, trade association) can jointly open the identity of one record. The vote is logged; no member can do it alone. Many deployments skip this step entirely.</p>
+  <div class="know"><ul class="sees"><li><b>Consortium</b> sees one identity, only if t members agree</li></ul><ul class="notsees"><li><b>Consortium</b> does not see any other record</li></ul></div>
+</article>
+    </div>
+  </div>
+</div></section>
+
+<section id="token"><div class="wrap">
+  <h2>The anonymous token</h2>
+  <p>The core trick is the <strong>blind signature</strong> (Chaum, 1982; standardised as RFC&nbsp;9474).
+  Think of a carbon-lined envelope: the company puts a random token inside and closes it; the issuer signs the
+  outside; the signature passes through onto the token. The company opens the envelope and has a signed token
+  the issuer has never seen, so when it is spent, nobody, not even the issuer, can say whose it was.</p>
+  <h3>Why it works</h3>
+  <p>The company picks a token <code>m</code> and a secret random number <code>r</code>, and sends the
+  envelope <code>b = m·r<sup>e</sup> mod n</code>. The issuer signs with its private key:
+  <code>b<sup>d</sup> = m<sup>d</sup>·r mod n</code>. The company divides by <code>r</code> and is left with
+  <code>m<sup>d</sup></code>, a valid signature on <code>m</code>. Anyone checks it with the public key:
+  <code>(m<sup>d</sup>)<sup>e</sup> = m</code>.</p>
+  <h3>Try it with toy numbers</h3>
+  <p>Key: <code>n = 33</code>, public <code>e = 3</code>, private <code>d = 7</code>. Real keys have 617 digits.</p>
+  <div class="toy">
+    <div><label for="m">Token m (company)</label><select id="m"></select></div>
+    <div><label for="r">Secret r (company)</label><select id="r"></select></div>
+  </div>
+  <dl class="out" id="toyout" aria-live="polite"></dl>
+  <div class="callout warn">Toy numbers only. The implementation uses RSA-2048 with the PSS encoding of
+  RFC&nbsp;9474 and reproduces the RFC's official test vectors.</div>
+</div></section>
+
+<section id="knows"><div class="wrap">
+  <h2>Who knows what</h2>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>Company identity</th><th>Which record is whose</th><th>Genome profile</th><th>Who got an alert</th></tr></thead>
+    <tbody>
+      <tr><td><b>Issuer</b></td><td class="yes">yes (and token count)</td><td class="no">no</td><td class="no">no</td><td class="no">no</td></tr>
+      <tr><td><b>Platform</b></td><td class="no">no</td><td class="no">no</td><td class="yes">yes</td><td class="no">no</td></tr>
+      <tr><td><b>Issuer + platform together</b></td><td class="yes">yes</td><td class="no">no</td><td class="yes">yes</td><td class="no">no</td></tr>
+      <tr><td><b>Public-health lab</b></td><td class="no">no</td><td class="no">no</td><td class="yes">yes</td><td class="no">no (only which record)</td></tr>
+      <tr><td><b>The company</b></td><td class="yes">its own</td><td class="yes">its own</td><td class="yes">its own</td><td class="yes">its own alerts</td></tr>
+    </tbody>
+  </table></div>
+  <p style="margin-top:14px">Even if issuer and platform are the same organisation and pool everything they have, they cannot
+  link a record to a company: the issuer only ever saw envelopes that look random.</p>
+</div></section>
+
+<section id="alerts"><div class="wrap">
+  <h2>Private alerts</h2>
+  <p>Each record carries a fresh public key made for that record only. The lab encrypts the alert to it
+  (HPKE, RFC&nbsp;9180) and posts it on a public bulletin. Every company downloads the whole bulletin and
+  tries its own keys. Because everyone downloads everything, nobody learns who was looking for what; because
+  only one secret key fits, nobody else can read it.</p>
+</div></section>
+
+<section id="metadata"><div class="wrap">
+  <h2>Metadata: enough to be useful, not enough to identify</h2>
+  <p>Only four fields leave the company: species, month, region and food category. A record is accepted only if
+  at least <code>k</code> enrolled companies share its region and category (k-anonymity, <code>k = 5</code> in the
+  prototype). If not, the client generalises automatically:</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Level</th><th>Region</th><th>Food category</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>NUTS-2 (e.g. ITF1, Abruzzo)</td><td>specific (e.g. dairy)</td><td>month</td></tr>
+      <tr><td>1</td><td>NUTS-1 (e.g. ITF, South)</td><td>specific</td><td>month</td></tr>
+      <tr><td>2</td><td>NUTS-1</td><td>any</td><td>month</td></tr>
+      <tr><td>3</td><td>country</td><td>specific</td><td>month</td></tr>
+      <tr><td>4</td><td>country</td><td>any</td><td>month</td></tr>
+    </tbody>
+  </table></div>
+  <p style="margin-top:14px">The genome profile is never altered, so cluster detection is exactly as good as with identified data.</p>
+</div></section>
+
+<section id="deploy"><div class="wrap">
+  <h2>Where it runs</h2>
+  <p>Anonymity comes from the tokens in every option. The choice of infrastructure only decides who can tamper
+  with the record and who, if anyone, can lift anonymity.</p>
+  <div class="grid g3">
+    <div class="card"><span class="tag t-teal">pilot</span><h3>A · One operator</h3><p>A single public institute runs a database. Cheapest. The operator cannot de-anonymise, but must be trusted to keep records intact.</p></div>
+    <div class="card"><span class="tag t-teal">recommended</span><h3>B · Database + shared log</h3><p>One database plus a tamper-evident log whose latest hash every consortium member keeps. Rewriting is <em>detected</em>. Optional escrow keys are split t-of-n.</p></div>
+    <div class="card"><span class="tag t-amber">only if needed</span><h3>C · Permissioned blockchain</h3><p>Every member runs a node; rewriting is <em>prevented</em>. Worth it only when several countries want joint operation. Adds nothing to anonymity.</p></div>
+  </div>
+</div></section>
+
+<section id="standards"><div class="wrap">
+  <h2>Built only on open standards</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Need</th><th>Mechanism</th><th>Standard</th></tr></thead>
+    <tbody>
+      <tr><td>Authorised but anonymous</td><td>Blind-signed single-use tokens</td><td>RFC 9474 (RSA blind signatures), Privacy Pass RFC 9576–9578</td></tr>
+      <tr><td>Private feedback</td><td>Alerts encrypted to one-time keys</td><td>RFC 9180 (HPKE)</td></tr>
+      <tr><td>Hide the network address</td><td>Third-party relay</td><td>RFC 9458 (Oblivious HTTP)</td></tr>
+      <tr><td>Tamper evidence</td><td>Append-only hash-chained log</td><td>RFC 9162 (Certificate Transparency), Trillian / Rekor</td></tr>
+      <tr><td>Optional disclosure</td><td>Key split among t of n bodies</td><td>Shamir secret sharing; RFC 9591 (FROST)</td></tr>
+      <tr><td>Comparable genomes</td><td>cgMLST allele profiles</td><td>Public cgMLST schemes, e.g. chewBBACA</td></tr>
+    </tbody>
+  </table></div>
+  <p style="margin-top:14px">All dependencies are open source (cryptography, pyhpke, FastAPI, SQLite) and the standards are royalty-free.</p>
+</div></section>
+
+<section id="try"><div class="wrap">
+  <h2>Try it</h2>
+<pre><code>git clone https://github.com/genpat-it/blind-genome-sharing.git
+cd blind-genome-sharing
+python3 -m venv .venv &amp;&amp; .venv/bin/pip install -r requirements.txt
+.venv/bin/python demo.py          # end-to-end scenario on synthetic data
+.venv/bin/python -m pytest -q     # RFC 9474 test vectors + protocol tests
+.venv/bin/python bench.py         # timings</code></pre>
+  <p>The demo enrols 40 synthetic companies, submits their isolates, tries six kinds of cheating (reused token,
+  forged token, wrong key, exact date, unregistered company, over quota), clusters with human cases, delivers
+  alerts and detects a rewritten record.</p>
+  <h3>Cost on one server core (RSA-2048, median)</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Operation</th><th>Where</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td>Blind a token</td><td>company</td><td>0.4 ms</td></tr>
+      <tr><td>Sign a blinded token</td><td>issuer</td><td>5.4 ms</td></tr>
+      <tr><td>Verify a token</td><td>platform</td><td>0.04 ms</td></tr>
+      <tr><td>Enrolment, end to end</td><td>per token</td><td>≈ 7 ms</td></tr>
+      <tr><td>Submission, end to end</td><td>per record</td><td>≈ 5 ms</td></tr>
+    </tbody>
+  </table></div>
+  <p style="margin-top:14px">A year of tokens for 10,000 companies (50 each) is about 45 minutes of one core.</p>
+</div></section>
+
+<section id="limits"><div class="wrap">
+  <h2>Limits, stated plainly</h2>
+  <ul>
+    <li><b>Proof of concept, synthetic data.</b> Not audited, not for production.</li>
+    <li><b>The genome itself is a fingerprint.</b> A persistent strain already linked to a plant identifies it; the protocol hides who <em>submitted</em>, not what the strain is.</li>
+    <li><b>Small regions or sectors</b> force coarser metadata.</li>
+    <li><b>Legal duties remain.</b> Anonymity does not suspend a company's obligation to act on unsafe food placed on the market.</li>
+    <li><b>Not yet implemented:</b> threshold escrow, Oblivious HTTP relay, real identity login, Merkle-tree log.</li>
+  </ul>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  anonsurv · © 2026 Istituto Zooprofilattico Sperimentale dell'Abruzzo e del Molise "G. Caporale" ·
+  released under the <a href="https://github.com/genpat-it/blind-genome-sharing/blob/main/LICENSE">EUPL-1.2</a> ·
+  <a href="https://github.com/genpat-it/blind-genome-sharing">source code</a>
+</div></footer>
+
+<script>
+(function(){
+  var n=33n,e=3n,d=7n;
+  function pw(b,x,m){var r=1n;b%=m;while(x>0n){if(x&1n)r=r*b%m;b=b*b%m;x>>=1n;}return r;}
+  function gcd(a,b){while(b){var t=a%b;a=b;b=t;}return a;}
+  function inv(a,m){for(var x=1n;x<m;x++){if(a*x%m===1n)return x;}return null;}
+  var ms=document.getElementById('m'), rs=document.getElementById('r'), out=document.getElementById('toyout');
+  for(var i=2;i<33;i++){ if(gcd(i,33)===1){ ms.add(new Option(String(i),String(i))); rs.add(new Option(String(i),String(i))); } }
+  ms.value='4'; rs.value='5';
+  function row(k,v){return '<dt>'+k+'</dt><dd>'+v+'</dd>';}
+  function run(){
+    var m=BigInt(ms.value), r=BigInt(rs.value);
+    var b=m*pw(r,e,n)%n, s1=pw(b,d,n), ri=inv(r,n), sig=s1*ri%n, check=pw(sig,e,n);
+    out.innerHTML=
+      row('Envelope sent to issuer','b = '+m+' · '+r+'³ mod 33 = <b>'+b+'</b>')+
+      row('Issuer signs envelope','b⁷ mod 33 = <b>'+s1+'</b>')+
+      row('Company removes r','r⁻¹ = '+ri+'; '+s1+' · '+ri+' mod 33 = <b>'+sig+'</b>')+
+      row('Signature on m, direct',m+'⁷ mod 33 = <b>'+pw(m,d,n)+'</b>')+
+      row('Platform verifies',sig+'³ mod 33 = '+check+' '+(check===m?'<span class="ok">= m ✓ valid</span>':'<span class="bad">≠ m</span>'))+
+      row('Issuer saw',b===m?'<b>'+b+'</b> (with this r the envelope equals m: pick another r)':'only <b>'+b+'</b>, never m = '+m);
+  }
+  ms.addEventListener('change',run); rs.addEventListener('change',run); run();
+})();
+</script>
+<script>
+(function(){
+  var root=document.getElementById('stepper'); if(!root) return;
+  document.documentElement.classList.add('js');
+  var cards=[].slice.call(root.querySelectorAll('.stepcard')), gs=[].slice.call(root.querySelectorAll('.st')),
+      lanes=[].slice.call(root.querySelectorAll('.lane')), dots=document.getElementById('dots'),
+      prev=document.getElementById('prev'), next=document.getElementById('next'), N=cards.length, cur=1;
+  var involved={1:'CI',2:'C',3:'IC',4:'C',5:'C',6:'CP',7:'PL',8:'LP',9:'PC',10:'KP'};
+  root.querySelector('.controls').hidden=false;
+  cards.forEach(function(c,i){var b=document.createElement('button');b.type='button';b.setAttribute('role','tab');
+    b.setAttribute('aria-label','Step '+(i+1));b.addEventListener('click',function(){go(i+1)});dots.appendChild(b);});
+  function go(n){cur=Math.max(1,Math.min(N,n));
+    cards.forEach(function(c,i){c.classList.toggle('on',i+1===cur)});
+    gs.forEach(function(g){var s=+g.dataset.s;g.classList.toggle('on',s===cur);g.classList.toggle('done',s<cur)});
+    lanes.forEach(function(l){l.classList.toggle('dim',involved[cur].indexOf(l.dataset.lane)<0)});
+    [].forEach.call(dots.children,function(d,i){d.setAttribute('aria-selected',i+1===cur?'true':'false')});
+    prev.disabled=cur===1; next.disabled=cur===N;
+    var box=root.querySelector('.diagram'), g=gs[cur-1];
+    if(box.scrollWidth>box.clientWidth&&g){var sv=box.querySelector('svg'),k=sv.getBoundingClientRect().width/900,bb=g.getBBox();
+      box.scrollTo({left:Math.max(0,(bb.x+bb.width/2)*k-box.clientWidth/2),behavior:'smooth'});}
+    try{history.replaceState(null,'','#step-'+cur)}catch(e){}
+  }
+  prev.addEventListener('click',function(){go(cur-1)}); next.addEventListener('click',function(){go(cur+1)});
+  document.addEventListener('keydown',function(e){
+    if(e.target.closest&&e.target.closest('select,input,textarea'))return;
+    var r=root.getBoundingClientRect(); if(r.bottom<0||r.top>innerHeight)return;
+    if(e.key==='ArrowRight')go(cur+1); if(e.key==='ArrowLeft')go(cur-1);});
+  var m=/^#step-(\d+)$/.exec(location.hash); go(m?+m[1]:1);
+})();
+</script>
+</body>
+</html>
