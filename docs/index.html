@@ -30,6 +30,7 @@ header.hero{padding:72px 0 40px;border-bottom:1px solid var(--line)}
 h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(34px,6vw,56px);line-height:1.08;margin:.3em 0 .35em;font-weight:700}
 .lead{font-size:clamp(17px,2.2vw,20px);color:var(--muted);max-width:44em;margin:0}
 .cta{margin:26px 0 0}
+.gh.alt{background:transparent;color:var(--fg);border:2px solid var(--fg);margin-left:6px}
 .gh{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:8px;background:var(--fg);color:var(--bg);font-weight:600;text-decoration:none}
 .gh:hover{opacity:.88}
 nav.toc{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:28px;font-size:14px}
@@ -123,12 +124,12 @@ footer a, section a{color:var(--teal)}
     <p class="lead">An open, low-cost protocol that lets food companies send pathogen genomes to public
     health <strong>anonymously but with proof that they are authorised</strong>, and get a private warning
     back if their strain matches human cases. No blockchain, no licences, only open standards.</p>
-    <p class="cta"><a class="gh" href="https://github.com/genpat-it/blind-genome-sharing"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>View the code on GitHub</a></p>
+    <p class="cta"><a class="gh" href="https://github.com/genpat-it/blind-genome-sharing"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>View the code on GitHub</a> <a class="gh alt" href="office.html">Watch it run: the office →</a></p>
     <nav class="toc" aria-label="Contents">
       <a href="#problem">Problem</a><a href="#actors">Actors</a><a href="#how">Step by step</a>
       <a href="#token">The anonymous token</a><a href="#knows">Who knows what</a>
       <a href="#alerts">Private alerts</a><a href="#metadata">Metadata</a><a href="#deploy">Where it runs</a>
-      <a href="#standards">Standards</a><a href="#try">Try it</a><a href="#limits">Limits</a><a href="https://github.com/genpat-it/blind-genome-sharing">GitHub</a>
+      <a href="#standards">Standards</a><a href="#try">Try it</a><a href="#data">Real data</a><a href="#limits">Limits</a><a href="office.html">The office</a><a href="https://github.com/genpat-it/blind-genome-sharing">GitHub</a>
     </nav>
   </div>
 </header>
@@ -191,17 +192,17 @@ footer a, section a{color:var(--teal)}
     <div class="cards">
 <article class="stepcard" data-step="1" id="step-1">
   <div class="stephead"><span class="stepno">Step 1 of 10</span><h3>The company logs in</h3></div>
-  <p>A cheese maker in Abruzzo (region ITF1, category dairy) logs in to the issuer with its real identity. The issuer checks that it is in the official register of food establishments and that it has not used up its yearly quota (e.g. 50 tokens).</p>
+  <p>A cheese maker in Abruzzo (region ITF1, category dairy) logs in to the issuer with its real identity (SPID or CIE, through OpenID Connect). The issuer reads the VAT number from the ID token, checks that it is in the official register of food establishments and that it has not used up its yearly quota (e.g. 50 tokens).</p>
   <div class="know"><ul class="sees"><li><b>Food company</b> sees its own identity</li><li><b>Issuer</b> sees who the company is, how many tokens it asks for</li></ul><ul class="notsees"><li><b>Issuer</b> does not see anything about future submissions</li></ul></div>
 </article>
 <article class="stepcard" data-step="2" id="step-2">
   <div class="stephead"><span class="stepno">Step 2 of 10</span><h3>Tokens are made at home</h3></div>
-  <p>On its own computer the client draws 50 random tokens and, for each, a secret random number r. It seals each token in an “envelope”: b = token · rᵉ mod n. The tokens and the r values never leave the company.</p>
+  <p>On its own computer the client draws 50 random tokens and, for each, a secret random number r. It seals each token in an “envelope”: b = token · rᵉ mod n. The tokens and the r values never leave the company. If the consortium wants an identity escrow, each token also carries the company’s identifier, sealed so that only t of the n members together can open it, and the client prepares 8 candidate envelopes per token.</p>
   <div class="know"><ul class="sees"><li><b>Food company</b> sees tokens and secret r values</li></ul><ul class="notsees"><li><b>Issuer</b> does not see the tokens</li><li><b>Platform</b> does not see anything yet</li></ul></div>
 </article>
 <article class="stepcard" data-step="3" id="step-3">
   <div class="stephead"><span class="stepno">Step 3 of 10</span><h3>The issuer signs without looking</h3></div>
-  <p>The company sends the 50 envelopes. To the issuer they look like random numbers. It signs each one with its private key and sends them back, and records only one fact: “this company received 50 tokens”.</p>
+  <p>The company sends the 50 envelopes. To the issuer they look like random numbers. It signs each one with its private key and sends them back, and records only one fact: “this company received 50 tokens”. With escrow, it first picks one of the 8 candidates at random and asks the company to open the other 7: if any of them names another company, issuance stops. The 8th, the one it signs, stays sealed. A cheater is caught 7 times in 8.</p>
   <div class="know"><ul class="sees"><li><b>Issuer</b> sees 50 random-looking envelopes, a counter</li></ul><ul class="notsees"><li><b>Issuer</b> does not see the tokens, or the signatures the company will end up with</li></ul></div>
 </article>
 <article class="stepcard" data-step="4" id="step-4">
@@ -216,7 +217,7 @@ footer a, section a{color:var(--teal)}
 </article>
 <article class="stepcard" data-step="6" id="step-6">
   <div class="stephead"><span class="stepno">Step 6 of 10</span><h3>Anonymous submission</h3></div>
-  <p>The client sends token, signature, profile, coarse metadata and the one-time public key through a relay that hides its network address. The platform checks the signature with the issuer’s public key, checks the token was never used, checks k-anonymity, then stores the record and appends its hash to the log.</p>
+  <p>The client sends token, signature, profile, coarse metadata and the one-time public key through an independent relay (Oblivious HTTP): the relay sees who is sending but only ciphertext, the gateway in front of the platform reads the content but sees only the relay. The platform checks the signature with the issuer’s public key, checks the token was never used, checks k-anonymity, then stores the record and adds its hash as a leaf of the Merkle log, which every consortium member cosigns.</p>
   <div class="know"><ul class="sees"><li><b>Platform</b> sees a valid token, a profile, ‘Listeria, 2026-10, ITF1, dairy’</li></ul><ul class="notsees"><li><b>Platform</b> does not see who sent it</li><li><b>Issuer</b> does not see that this token was spent by this company</li></ul></div>
 </article>
 <article class="stepcard" data-step="7" id="step-7">
@@ -236,7 +237,7 @@ footer a, section a{color:var(--teal)}
 </article>
 <article class="stepcard" data-step="10" id="step-10">
   <div class="stephead"><span class="stepno">Step 10 of 10</span><h3>Optional: lifting anonymity</h3></div>
-  <p>Only if the system is set up with an identity escrow, and only in a serious outbreak under published rules, at least t of the n consortium members (e.g. ministry, institute, region, trade association) can jointly open the identity of one record. The vote is logged; no member can do it alone. Many deployments skip this step entirely.</p>
+  <p>Only if the system is set up with an identity escrow, and only in a serious outbreak under published rules, at least t of the n consortium members (e.g. ministry, institute, region, trade association) can jointly open the identity of one record. The request is first written in the public log; each member checks it there, decides for itself and releases its share; 3 shares of 5 open that record and no other. Many deployments skip this step entirely.</p>
   <div class="know"><ul class="sees"><li><b>Consortium</b> sees one identity, only if t members agree</li></ul><ul class="notsees"><li><b>Consortium</b> does not see any other record</li></ul></div>
 </article>
     </div>
@@ -314,7 +315,7 @@ footer a, section a{color:var(--teal)}
   with the record and who, if anyone, can lift anonymity.</p>
   <div class="grid g3">
     <div class="card"><span class="tag t-teal">pilot</span><h3>A · One operator</h3><p>A single public institute runs a database. Cheapest. The operator cannot de-anonymise, but must be trusted to keep records intact.</p></div>
-    <div class="card"><span class="tag t-teal">recommended</span><h3>B · Database + shared log</h3><p>One database plus a tamper-evident log whose latest hash every consortium member keeps. Rewriting is <em>detected</em>. Optional escrow keys are split t-of-n.</p></div>
+    <div class="card"><span class="tag t-teal">recommended</span><h3>B · Database + shared log</h3><p>One database plus a Merkle log that every consortium member cosigns after checking it only grew. Rewriting is <em>detected</em>. Optional escrow keys are split t-of-n.</p></div>
     <div class="card"><span class="tag t-amber">only if needed</span><h3>C · Permissioned blockchain</h3><p>Every member runs a node; rewriting is <em>prevented</em>. Worth it only when several countries want joint operation. Adds nothing to anonymity.</p></div>
   </div>
 </div></section>
@@ -326,13 +327,14 @@ footer a, section a{color:var(--teal)}
     <tbody>
       <tr><td>Authorised but anonymous</td><td>Blind-signed single-use tokens</td><td>RFC 9474 (RSA blind signatures), Privacy Pass RFC 9576–9578</td></tr>
       <tr><td>Private feedback</td><td>Alerts encrypted to one-time keys</td><td>RFC 9180 (HPKE)</td></tr>
-      <tr><td>Hide the network address</td><td>Third-party relay</td><td>RFC 9458 (Oblivious HTTP)</td></tr>
-      <tr><td>Tamper evidence</td><td>Append-only hash-chained log</td><td>RFC 9162 (Certificate Transparency), Trillian / Rekor</td></tr>
-      <tr><td>Optional disclosure</td><td>Key split among t of n bodies</td><td>Shamir secret sharing; RFC 9591 (FROST)</td></tr>
+      <tr><td>Log in as a company</td><td>ID token with the VAT number</td><td>OpenID Connect, as in SPID / CIE</td></tr>
+      <tr><td>Hide the network address</td><td>Third-party relay and gateway</td><td>RFC 9458 (Oblivious HTTP), RFC 9292 (Binary HTTP)</td></tr>
+      <tr><td>Tamper evidence</td><td>Merkle log cosigned by the members (witnesses)</td><td>RFC 9162 (Certificate Transparency); Trillian / Tessera in production</td></tr>
+      <tr><td>Optional disclosure</td><td>Identifier sealed to t of n members, checked by cut-and-choose</td><td>Shamir secret sharing, RFC 9180 (HPKE), Chaum–Fiat–Naor</td></tr>
       <tr><td>Comparable genomes</td><td>cgMLST allele profiles</td><td>Public cgMLST schemes, e.g. chewBBACA</td></tr>
     </tbody>
   </table></div>
-  <p style="margin-top:14px">All dependencies are open source (cryptography, pyhpke, FastAPI, SQLite) and the standards are royalty-free.</p>
+  <p style="margin-top:14px">All dependencies are open source (cryptography, pyhpke, PyJWT, FastAPI, SQLite, Keycloak) and the standards are royalty-free. Each one is checked against its official test data: RFC 9474 vectors, the RFC 9458 example, the transparency-dev Merkle probes.</p>
 </div></section>
 
 <section id="try"><div class="wrap">
@@ -340,12 +342,19 @@ footer a, section a{color:var(--teal)}
 <pre><code>git clone https://github.com/genpat-it/blind-genome-sharing.git
 cd blind-genome-sharing
 python3 -m venv .venv &amp;&amp; .venv/bin/pip install -r requirements.txt
-.venv/bin/python demo.py          # end-to-end scenario on synthetic data
-.venv/bin/python -m pytest -q     # RFC 9474 test vectors + protocol tests
-.venv/bin/python bench.py         # timings</code></pre>
-  <p>The demo enrols 40 synthetic companies, submits their isolates, tries six kinds of cheating (reused token,
-  forged token, wrong key, exact date, unregistered company, over quota), clusters with human cases, delivers
-  alerts and detects a rewritten record.</p>
+.venv/bin/python demo.py               # end-to-end scenario on synthetic data
+.venv/bin/python -m pytest -q          # RFC test vectors + protocol tests
+.venv/bin/python simulate.py --serve   # record a run and watch it in the office
+.venv/bin/python bench.py              # timings
+
+# every party in its own container, Keycloak as identity provider
+.venv/bin/python deploy/setup.py &amp;&amp; docker compose up -d --build
+docker compose run --rm e2e</code></pre>
+  <p>The demo enrols 40 synthetic companies, submits their isolates through the relay, tries a dozen kinds of
+  cheating (reused or forged token, wrong key, someone else’s escrow, exact date, forged login, unregistered
+  company, over quota, a false identifier in the escrow), clusters with human cases, delivers alerts, catches a
+  rewritten log and runs a disclosure with 3 of 5 trustees. <a href="office.html">The office</a> shows every
+  message of such a run.</p>
   <h3>Cost on one server core (RSA-2048, median)</h3>
   <div class="scroll"><table>
     <thead><tr><th>Operation</th><th>Where</th><th>Time</th></tr></thead>
@@ -353,11 +362,27 @@ python3 -m venv .venv &amp;&amp; .venv/bin/pip install -r requirements.txt
       <tr><td>Blind a token</td><td>company</td><td>0.4 ms</td></tr>
       <tr><td>Sign a blinded token</td><td>issuer</td><td>5.4 ms</td></tr>
       <tr><td>Verify a token</td><td>platform</td><td>0.04 ms</td></tr>
-      <tr><td>Enrolment, end to end</td><td>per token</td><td>≈ 7 ms</td></tr>
-      <tr><td>Submission, end to end</td><td>per record</td><td>≈ 5 ms</td></tr>
+      <tr><td>Enrolment with escrow (login, 8 candidates, 7 checked)</td><td>per token</td><td>≈ 20 ms</td></tr>
+      <tr><td>Submission through relay and gateway</td><td>per record</td><td>≈ 12 ms</td></tr>
+      <tr><td>Checkpoint cosigned by 3 witnesses</td><td>platform + members</td><td>≈ 27 ms</td></tr>
+      <tr><td>Inclusion proof, log of 100,000 entries</td><td>company</td><td>17 hashes, 0.02 ms</td></tr>
     </tbody>
   </table></div>
-  <p style="margin-top:14px">A year of tokens for 10,000 companies (50 each) is about 45 minutes of one core.</p>
+  <p style="margin-top:14px">A year of escrowed tokens for 10,000 companies (50 each) is about 100 minutes of one core.</p>
+</div></section>
+
+<section id="data"><div class="wrap">
+  <h2>What public data say</h2>
+  <p><b>Food and environmental genomes often come first.</b> In NCBI Pathogen Detection (isolates 2015–2025),
+  382 clusters of <em>Listeria monocytogenes</em> genomes at most 10 SNPs apart contain both human and food or
+  environmental isolates. In 44% of them a non-human isolate was collected first, by a median of 22 months.
+  In 42% a matching non-human genome was already public when the first human genome arrived, and 43% of the human
+  cases were collected after that moment. Those non-human isolates come mostly from official sampling; companies’
+  own isolates, far more numerous, are today not shared at all.</p>
+  <p><b>Anonymity sets are large enough.</b> On Eurostat counts of Italian food manufacturers, with k = 5 and one
+  company in ten taking part, at least 93% of companies in every sector except fish can report their NUTS-2
+  region and sector; fish processing needs the macro-region until about a quarter of the sector takes part.</p>
+  <p>Scripts: <a href="https://github.com/genpat-it/blind-genome-sharing/tree/main/analysis">analysis/</a>.</p>
 </div></section>
 
 <section id="limits"><div class="wrap">
@@ -365,9 +390,10 @@ python3 -m venv .venv &amp;&amp; .venv/bin/pip install -r requirements.txt
   <ul>
     <li><b>Proof of concept, synthetic data.</b> Not audited, not for production.</li>
     <li><b>The genome itself is a fingerprint.</b> A persistent strain already linked to a plant identifies it; the protocol hides who <em>submitted</em>, not what the strain is.</li>
-    <li><b>Small regions or sectors</b> force coarser metadata.</li>
+    <li><b>Small regions or sectors</b> force coarser metadata (in Italy: fish processing).</li>
     <li><b>Legal duties remain.</b> Anonymity does not suspend a company's obligation to act on unsafe food placed on the market.</li>
-    <li><b>Not yet implemented:</b> threshold escrow, Oblivious HTTP relay, real identity login, Merkle-tree log.</li>
+    <li><b>Stand-ins.</b> A demo identity provider and Keycloak take the place of SPID/CIE, which require the issuer to be accredited. One log operator with witnesses (model B); the database itself is not replicated.</li>
+    <li><b>Escrow soundness is probabilistic:</b> a cheater escapes cut-and-choose with probability 1/8 per attempt and is suspended when caught. Anonymous credentials (BBS, Idemix) would make it exact.</li>
   </ul>
 </div></section>
 </main>

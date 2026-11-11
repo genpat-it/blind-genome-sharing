@@ -1,0 +1,75 @@
+# SPDX-License-Identifier: EUPL-1.2
+name: anonsurv
+# Every party of the protocol as its own container.  First: .venv/bin/python deploy/setup.py
+#   docker compose up -d --build        then   docker compose run --rm e2e
+# Only the relay and Keycloak would face companies in a deployment; here nothing is published
+# on the host except the relay (18080) and Keycloak (18081), for trying things by hand.
+x-svc: &svc
+  build: {context: ., network: host}   # host network only for pip during the build
+  volumes: ["./deploy/config:/config:ro"]
+  restart: unless-stopped
+
+services:
+  keycloak:                       # stands in for SPID/CIE (OpenID Connect)
+    image: quay.io/keycloak/keycloak:26.4
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: http://keycloak:8080
+      KC_HTTP_ENABLED: "true"
+    volumes: ["./deploy/keycloak:/opt/keycloak/data/import:ro"]
+    ports: ["127.0.0.1:18081:8080"]
+
+  issuer:                         # e.g. the Ministry of Health or a regional authority
+    <<: *svc
+    command: ["issuer"]
+    environment:
+      OIDC_ISSUER: http://keycloak:8080/realms/anonsurv
+      OIDC_CLIENT_ID: anonsurv-issuer
+    depends_on: [keycloak]
+
+  platform:                       # e.g. the national reference laboratory
+    <<: *svc
+    command: ["platform"]
+    environment:
+      WITNESSES: member-1=http://witness-1:8000,member-2=http://witness-2:8000,member-3=http://witness-3:8000
+      CHECKPOINT_SECONDS: "5"
+    volumes: ["./deploy/config:/config:ro", "platform-data:/data"]
+
+  gateway:                        # run with the platform
+    <<: *svc
+    command: ["gateway"]
+    environment: {PLATFORM_URL: "http://platform:8000"}
+
+  relay:                          # run by someone else: a consortium member, a trade association
+    <<: *svc
+    command: ["relay"]
+    environment: {GATEWAY_URL: "http://gateway:8000"}
+    ports: ["127.0.0.1:18080:8000"]
+
+  witness-1: &witness
+    <<: *svc
+    command: ["witness"]
+    environment: {WITNESS_NAME: member-1}
+    volumes: ["./deploy/config:/config:ro", "witness-1:/data"]
+  witness-2:
+    <<: *witness
+    environment: {WITNESS_NAME: member-2}
+    volumes: ["./deploy/config:/config:ro", "witness-2:/data"]
+  witness-3:
+    <<: *witness
+    environment: {WITNESS_NAME: member-3}
+    volumes: ["./deploy/config:/config:ro", "witness-3:/data"]
+
+  e2e:                            # companies, laboratory and trustees, as network clients
+    <<: *svc
+    entrypoint: ["python", "scripts/e2e.py"]
+    restart: "no"
+    profiles: [test]
+
+volumes:
+  platform-data:
+  witness-1:
+  witness-2:
+  witness-3:

@@ -28,7 +28,7 @@ def run(platform: httpx.Client, lab_key: str, clinical: list[dict], since: int =
         last = rec["seq"]
         thr = THRESHOLDS.get(rec["meta"]["species"], 7)
         matches = [(hamming(rec["alleles"], c["alleles"]), c["id"]) for c in clinical
-                   if c["species"] == rec["meta"]["species"]]
+                   if c["species"] == rec["meta"]["species"] and len(c["alleles"]) == len(rec["alleles"])]
         close = sorted(m for m in matches if m[0] <= thr)
         if not close:
             continue

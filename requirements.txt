@@ -1,6 +1,8 @@
 cryptography>=46
 pyhpke>=0.6
+pyjwt[crypto]>=2.9
 fastapi>=0.115
+python-multipart>=0.0.9
 httpx>=0.27
 uvicorn>=0.30
 pytest>=8

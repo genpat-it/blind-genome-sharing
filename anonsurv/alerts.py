@@ -27,6 +27,15 @@ def seal(public_key: bytes, plaintext: bytes) -> tuple[bytes, bytes]:
     return enc, ctx.seal(plaintext)
 
 
+def valid_public_key(public_key: bytes) -> bool:
+    """Rejects malformed and low-order X25519 keys, to which nothing can be encrypted."""
+    try:
+        seal(public_key, b"")
+        return True
+    except Exception:
+        return False
+
+
 def try_open(secret_key: bytes, enc: bytes, ciphertext: bytes) -> bytes | None:
     try:
         ctx = SUITE.create_recipient_context(enc, SUITE.kem.deserialize_private_key(secret_key), INFO)

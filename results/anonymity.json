@@ -1,0 +1,550 @@
+{
+ "year": "2023",
+ "regions": 21,
+ "c10_local_units": 53036,
+ "sector_share": {
+  "meat": 0.066,
+  "fish": 0.0085,
+  "produce": 0.0334,
+  "dairy": 0.0623,
+  "other-food": 0.1401,
+  "bakery": 0.6036
+ },
+ "cells": {
+  "ITC1|meat": 240.8,
+  "ITC1|fish": 30.9,
+  "ITC1|produce": 122.0,
+  "ITC1|dairy": 227.2,
+  "ITC1|other-food": 510.8,
+  "ITC1|bakery": 2200.8,
+  "ITC2|meat": 8.0,
+  "ITC2|fish": 1.0,
+  "ITC2|produce": 4.0,
+  "ITC2|dairy": 7.5,
+  "ITC2|other-food": 17.0,
+  "ITC2|bakery": 73.0,
+  "ITC3|meat": 104.0,
+  "ITC3|fish": 13.3,
+  "ITC3|produce": 52.7,
+  "ITC3|dairy": 98.2,
+  "ITC3|other-food": 220.7,
+  "ITC3|bakery": 950.7,
+  "ITC4|meat": 369.8,
+  "ITC4|fish": 47.4,
+  "ITC4|produce": 187.3,
+  "ITC4|dairy": 349.0,
+  "ITC4|other-food": 784.5,
+  "ITC4|bakery": 3379.7,
+  "ITF1|meat": 110.4,
+  "ITF1|fish": 14.1,
+  "ITF1|produce": 55.9,
+  "ITF1|dairy": 104.1,
+  "ITF1|other-food": 234.1,
+  "ITF1|bakery": 1008.6,
+  "ITF2|meat": 34.0,
+  "ITF2|fish": 4.4,
+  "ITF2|produce": 17.2,
+  "ITF2|dairy": 32.1,
+  "ITF2|other-food": 72.2,
+  "ITF2|bakery": 310.9,
+  "ITF3|meat": 372.3,
+  "ITF3|fish": 47.7,
+  "ITF3|produce": 188.6,
+  "ITF3|dairy": 351.3,
+  "ITF3|other-food": 789.8,
+  "ITF3|bakery": 3402.6,
+  "ITF4|meat": 301.7,
+  "ITF4|fish": 38.7,
+  "ITF4|produce": 152.8,
+  "ITF4|dairy": 284.8,
+  "ITF4|other-food": 640.2,
+  "ITF4|bakery": 2757.9,
+  "ITF5|meat": 51.6,
+  "ITF5|fish": 6.6,
+  "ITF5|produce": 26.1,
+  "ITF5|dairy": 48.7,
+  "ITF5|other-food": 109.4,
+  "ITF5|bakery": 471.4,
+  "ITF6|meat": 159.0,
+  "ITF6|fish": 20.4,
+  "ITF6|produce": 80.5,
+  "ITF6|dairy": 150.1,
+  "ITF6|other-food": 337.4,
+  "ITF6|bakery": 1453.5,
+  "ITG1|meat": 437.3,
+  "ITG1|fish": 56.0,
+  "ITG1|produce": 221.5,
+  "ITG1|dairy": 412.6,
+  "ITG1|other-food": 927.7,
+  "ITG1|bakery": 3996.6,
+  "ITG2|meat": 113.3,
+  "ITG2|fish": 14.5,
+  "ITG2|produce": 57.4,
+  "ITG2|dairy": 106.9,
+  "ITG2|other-food": 240.3,
+  "ITG2|bakery": 1035.2,
+  "ITH1|meat": 23.8,
+  "ITH1|fish": 3.1,
+  "ITH1|produce": 12.1,
+  "ITH1|dairy": 22.5,
+  "ITH1|other-food": 50.6,
+  "ITH1|bakery": 217.9,
+  "ITH2|meat": 21.9,
+  "ITH2|fish": 2.8,
+  "ITH2|produce": 11.1,
+  "ITH2|dairy": 20.6,
+  "ITH2|other-food": 46.4,
+  "ITH2|bakery": 199.8,
+  "ITH3|meat": 219.1,
+  "ITH3|fish": 28.1,
+  "ITH3|produce": 111.0,
+  "ITH3|dairy": 206.8,
+  "ITH3|other-food": 464.9,
+  "ITH3|bakery": 2002.8,
+  "ITH4|meat": 47.4,
+  "ITH4|fish": 6.1,
+  "ITH4|produce": 24.0,
+  "ITH4|dairy": 44.7,
+  "ITH4|other-food": 100.5,
+  "ITH4|bakery": 432.8,
+  "ITH5|meat": 304.6,
+  "ITH5|fish": 39.0,
+  "ITH5|produce": 154.3,
+  "ITH5|dairy": 287.4,
+  "ITH5|other-food": 646.2,
+  "ITH5|bakery": 2783.9,
+  "ITI1|meat": 190.6,
+  "ITI1|fish": 24.4,
+  "ITI1|produce": 96.5,
+  "ITI1|dairy": 179.9,
+  "ITI1|other-food": 404.4,
+  "ITI1|bakery": 1742.0,
+  "ITI2|meat": 55.5,
+  "ITI2|fish": 7.1,
+  "ITI2|produce": 28.1,
+  "ITI2|dairy": 52.4,
+  "ITI2|other-food": 117.8,
+  "ITI2|bakery": 507.6,
+  "ITI3|meat": 105.4,
+  "ITI3|fish": 13.5,
+  "ITI3|produce": 53.4,
+  "ITI3|dairy": 99.5,
+  "ITI3|other-food": 223.6,
+  "ITI3|bakery": 963.4,
+  "ITI4|meat": 232.2,
+  "ITI4|fish": 29.8,
+  "ITI4|produce": 117.6,
+  "ITI4|dairy": 219.1,
+  "ITI4|other-food": 492.6,
+  "ITI4|bakery": 2122.3
+ },
+ "results": {
+  "k5_p0.02": {
+   "k": 5,
+   "participation": 0.02,
+   "companies": 970,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.846,
+    "NUTS-1 + sector": 0.139,
+    "NUTS-1": 0.015
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 0.51,
+     "NUTS-1 + sector": 0.49
+    },
+    "fish": {
+     "NUTS-1": 1.0
+    },
+    "produce": {
+     "NUTS-1 + sector": 0.833,
+     "NUTS-1": 0.167
+    },
+    "dairy": {
+     "NUTS-2 + sector": 0.51,
+     "NUTS-1 + sector": 0.49
+    },
+    "other-food": {
+     "NUTS-2 + sector": 0.807,
+     "NUTS-1 + sector": 0.193
+    },
+    "bakery": {
+     "NUTS-2 + sector": 0.985,
+     "NUTS-1 + sector": 0.015
+    }
+   }
+  },
+  "k5_p0.05": {
+   "k": 5,
+   "participation": 0.05,
+   "companies": 2424,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.961,
+    "NUTS-1 + sector": 0.03,
+    "NUTS-1": 0.009
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 0.931,
+     "NUTS-1 + sector": 0.069
+    },
+    "fish": {
+     "NUTS-1": 1.0
+    },
+    "produce": {
+     "NUTS-2 + sector": 0.707,
+     "NUTS-1 + sector": 0.293
+    },
+    "dairy": {
+     "NUTS-2 + sector": 0.871,
+     "NUTS-1 + sector": 0.129
+    },
+    "other-food": {
+     "NUTS-2 + sector": 0.975,
+     "NUTS-1 + sector": 0.025
+    },
+    "bakery": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    }
+   }
+  },
+  "k5_p0.1": {
+   "k": 5,
+   "participation": 0.1,
+   "companies": 4848,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.982,
+    "NUTS-1 + sector": 0.018
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 0.961,
+     "NUTS-1 + sector": 0.039
+    },
+    "fish": {
+     "NUTS-1 + sector": 0.875,
+     "NUTS-2 + sector": 0.125
+    },
+    "produce": {
+     "NUTS-2 + sector": 0.931,
+     "NUTS-1 + sector": 0.069
+    },
+    "dairy": {
+     "NUTS-2 + sector": 0.947,
+     "NUTS-1 + sector": 0.053
+    },
+    "other-food": {
+     "NUTS-2 + sector": 0.991,
+     "NUTS-1 + sector": 0.009
+    },
+    "bakery": {
+     "NUTS-2 + sector": 1.0
+    }
+   }
+  },
+  "k5_p0.25": {
+   "k": 5,
+   "participation": 0.25,
+   "companies": 12119,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.997,
+    "NUTS-1 + sector": 0.003
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "fish": {
+     "NUTS-2 + sector": 0.807,
+     "NUTS-1 + sector": 0.193
+    },
+    "produce": {
+     "NUTS-2 + sector": 0.975,
+     "NUTS-1 + sector": 0.025
+    },
+    "dairy": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "other-food": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "bakery": {
+     "NUTS-2 + sector": 1.0
+    }
+   }
+  },
+  "k5_p0.5": {
+   "k": 5,
+   "participation": 0.5,
+   "companies": 24238,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.999,
+    "NUTS-1 + sector": 0.001
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "fish": {
+     "NUTS-2 + sector": 0.931,
+     "NUTS-1 + sector": 0.069
+    },
+    "produce": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "dairy": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "other-food": {
+     "NUTS-2 + sector": 1.0
+    },
+    "bakery": {
+     "NUTS-2 + sector": 1.0
+    }
+   }
+  },
+  "k5_p1.0": {
+   "k": 5,
+   "participation": 1.0,
+   "companies": 48475,
+   "share_by_level": {
+    "NUTS-2 + sector": 1.0,
+    "NUTS-1 + sector": 0.0
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 1.0
+    },
+    "fish": {
+     "NUTS-2 + sector": 0.975,
+     "NUTS-1 + sector": 0.025
+    },
+    "produce": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "dairy": {
+     "NUTS-2 + sector": 1.0
+    },
+    "other-food": {
+     "NUTS-2 + sector": 1.0
+    },
+    "bakery": {
+     "NUTS-2 + sector": 1.0
+    }
+   }
+  },
+  "k10_p0.02": {
+   "k": 10,
+   "participation": 0.02,
+   "companies": 970,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.714,
+    "NUTS-1 + sector": 0.217,
+    "NUTS-1": 0.069
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-1 + sector": 1.0
+    },
+    "fish": {
+     "NUTS-1": 1.0
+    },
+    "produce": {
+     "NUTS-1": 1.0
+    },
+    "dairy": {
+     "NUTS-1 + sector": 0.657,
+     "NUTS-1": 0.343
+    },
+    "other-food": {
+     "NUTS-2 + sector": 0.579,
+     "NUTS-1 + sector": 0.421
+    },
+    "bakery": {
+     "NUTS-2 + sector": 0.947,
+     "NUTS-1 + sector": 0.053
+    }
+   }
+  },
+  "k10_p0.05": {
+   "k": 10,
+   "participation": 0.05,
+   "companies": 2424,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.901,
+    "NUTS-1 + sector": 0.089,
+    "NUTS-1": 0.009
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 0.707,
+     "NUTS-1 + sector": 0.293
+    },
+    "fish": {
+     "NUTS-1": 1.0
+    },
+    "produce": {
+     "NUTS-1 + sector": 0.875,
+     "NUTS-2 + sector": 0.125
+    },
+    "dairy": {
+     "NUTS-2 + sector": 0.707,
+     "NUTS-1 + sector": 0.293
+    },
+    "other-food": {
+     "NUTS-2 + sector": 0.931,
+     "NUTS-1 + sector": 0.069
+    },
+    "bakery": {
+     "NUTS-2 + sector": 0.991,
+     "NUTS-1 + sector": 0.009
+    }
+   }
+  },
+  "k10_p0.1": {
+   "k": 10,
+   "participation": 0.1,
+   "companies": 4848,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.961,
+    "NUTS-1 + sector": 0.033,
+    "NUTS-1": 0.007
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 0.931,
+     "NUTS-1 + sector": 0.069
+    },
+    "fish": {
+     "NUTS-1": 0.706,
+     "NUTS-1 + sector": 0.294
+    },
+    "produce": {
+     "NUTS-2 + sector": 0.707,
+     "NUTS-1 + sector": 0.293
+    },
+    "dairy": {
+     "NUTS-2 + sector": 0.871,
+     "NUTS-1 + sector": 0.129
+    },
+    "other-food": {
+     "NUTS-2 + sector": 0.975,
+     "NUTS-1 + sector": 0.025
+    },
+    "bakery": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    }
+   }
+  },
+  "k10_p0.25": {
+   "k": 10,
+   "participation": 0.25,
+   "companies": 12119,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.987,
+    "NUTS-1 + sector": 0.013
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 0.975,
+     "NUTS-1 + sector": 0.025
+    },
+    "fish": {
+     "NUTS-1 + sector": 0.663,
+     "NUTS-2 + sector": 0.337
+    },
+    "produce": {
+     "NUTS-2 + sector": 0.931,
+     "NUTS-1 + sector": 0.069
+    },
+    "dairy": {
+     "NUTS-2 + sector": 0.975,
+     "NUTS-1 + sector": 0.025
+    },
+    "other-food": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "bakery": {
+     "NUTS-2 + sector": 1.0
+    }
+   }
+  },
+  "k10_p0.5": {
+   "k": 10,
+   "participation": 0.5,
+   "companies": 24238,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.997,
+    "NUTS-1 + sector": 0.003
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "fish": {
+     "NUTS-2 + sector": 0.807,
+     "NUTS-1 + sector": 0.193
+    },
+    "produce": {
+     "NUTS-2 + sector": 0.975,
+     "NUTS-1 + sector": 0.025
+    },
+    "dairy": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "other-food": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "bakery": {
+     "NUTS-2 + sector": 1.0
+    }
+   }
+  },
+  "k10_p1.0": {
+   "k": 10,
+   "participation": 1.0,
+   "companies": 48475,
+   "share_by_level": {
+    "NUTS-2 + sector": 0.999,
+    "NUTS-1 + sector": 0.001
+   },
+   "by_sector": {
+    "meat": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "fish": {
+     "NUTS-2 + sector": 0.931,
+     "NUTS-1 + sector": 0.069
+    },
+    "produce": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "dairy": {
+     "NUTS-2 + sector": 0.998,
+     "NUTS-1 + sector": 0.002
+    },
+    "other-food": {
+     "NUTS-2 + sector": 1.0
+    },
+    "bakery": {
+     "NUTS-2 + sector": 1.0
+    }
+   }
+  }
+ }
+}

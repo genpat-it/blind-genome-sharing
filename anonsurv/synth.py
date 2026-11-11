@@ -24,7 +24,7 @@ def register(rng: random.Random) -> dict[str, Company]:
             for _ in range(n):
                 i += 1
                 cid = f"FBO{i:04d}"
-                reg[cid] = Company(cid, f"Company {i}", region, cat, f"key-{cid}")
+                reg[cid] = Company(cid, f"Company {i}", region, cat, vat=f"{i:011d}")
     return reg
 
 

@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The office: anonsurv at work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfaf7; --fg:#1d2327; --muted:#5b6670; --line:#e3e0d8; --card:#ffffff;
+  --teal:#177370; --teal-soft:#e3f5f4; --red:#b3261e; --red-soft:#fde8e6; --amber:#b86e00;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121517; --fg:#e7eaec; --muted:#9aa6ae; --line:#2b3236; --card:#1a1f22;
+    --teal:#5cc7c1; --teal-soft:#16302f; --red:#ff8a80; --red-soft:#3a1715; --amber:#f0b04a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121517; --fg:#e7eaec; --muted:#9aa6ae; --line:#2b3236; --card:#1a1f22;
+  --teal:#5cc7c1; --teal-soft:#16302f; --red:#ff8a80; --red-soft:#3a1715; --amber:#f0b04a;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px}
+header{padding-block:22px 8px}
+.pix{font-family:"Press Start 2P",ui-monospace,Menlo,Consolas,monospace}
+h1{font-size:clamp(16px,2.6vw,24px);line-height:1.4;margin:0 0 8px}
+header p{margin:0;color:var(--muted);max-width:62em}
+header nav{margin-top:10px;display:flex;gap:16px;flex-wrap:wrap}
+header nav a{color:var(--teal);text-decoration:none;font-weight:600}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;padding-block:14px 30px}
+@media (max-width:980px){.stage{grid-template-columns:minmax(0,1fr)}}
+.screen{border:4px solid #2a2433;border-radius:6px;background:#2a2433;overflow:hidden;box-shadow:0 6px 0 #00000022}
+canvas{display:block;width:100%;height:auto;image-rendering:pixelated}
+.scroller{overflow-x:auto}
+@media (max-width:700px){.scroller canvas{width:760px;max-width:none}}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;background:#2a2433;color:#f4ecd8}
+.controls button,.controls select{font-family:"Press Start 2P",ui-monospace,monospace;font-size:10px;background:#f4ecd8;color:#2a2433;border:0;
+  border-bottom:3px solid #b9a98a;border-radius:3px;padding:8px 10px;cursor:pointer}
+.controls button:active{transform:translateY(2px);border-bottom-width:1px}
+.controls .prog{flex:1;min-width:120px;height:10px;background:#4a4058;border-radius:2px;overflow:hidden}
+.controls .prog i{display:block;height:100%;width:0;background:#7bd389}
+.controls .count{font-size:9px;opacity:.85}
+aside{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px}
+.card h2{font-size:11px;margin:0 0 10px;color:var(--teal)}
+#chapterTitle{font-size:12px;line-height:1.6;margin:0 0 6px}
+#chapterText{margin:0;color:var(--muted);font-size:14px}
+#now{font-size:14px;min-height:5.5em}
+#now .what{font-weight:600}
+#now .meta{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--muted);margin-top:4px;word-break:break-word}
+#now .err{color:var(--red);font-weight:700}
+.sees{margin:8px 0 0;padding:0;list-style:none}
+.sees li{font-size:13px;padding:5px 0;border-top:1px dashed var(--line);display:grid;grid-template-columns:88px 1fr;gap:8px}
+.sees b{color:var(--teal);font-weight:700}
+.sees .no{color:var(--muted)}
+#ledger{font-size:13px;display:grid;gap:6px}
+#ledger div{display:grid;grid-template-columns:88px 1fr;gap:8px}
+#ledger b{font-weight:700}
+#chapters{display:flex;flex-direction:column;gap:4px}
+#chapters button{text-align:left;background:none;border:0;padding:4px 6px;border-radius:4px;color:var(--fg);font:13px system-ui,sans-serif;cursor:pointer}
+#chapters button.on{background:var(--teal-soft);color:var(--teal);font-weight:700}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;font-size:13px;margin-top:8px}
+.legend span{display:flex;align-items:center;gap:8px}
+.legend canvas{width:24px;height:18px;flex:none}
+.note{font-size:13px;color:var(--muted)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:var(--teal-soft);padding:1px 5px;border-radius:4px}
+#fail{display:none;padding:20px;color:#f4ecd8;font-family:ui-monospace,monospace}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <h1 class="pix">The office</h1>
+  <p>Every party of the protocol at its desk. Each envelope is one HTTP request that really happened when
+     the proof of concept ran <code>simulate.py</code>, with its real size and answer. On the right is what
+     each party can see, and what it has learned so far.</p>
+  <nav><a href="./">← The protocol step by step</a><a href="https://github.com/genpat-it/blind-genome-sharing">GitHub</a>
+    <a href="https://github.com/genpat-it/blind-genome-sharing/blob/main/simulate.py">simulate.py</a></nav>
+</header>
+
+<main class="wrap">
+  <div class="stage">
+    <div>
+      <div class="screen">
+        <div class="scroller"><canvas id="world" width="1280" height="760" aria-label="Animated office: the parties of the protocol exchanging messages"></canvas></div>
+        <div id="fail">Could not load sim/trace.json. Run <b>python simulate.py --serve</b> and open the page it prints.</div>
+        <div class="controls">
+          <button id="play" class="pix" aria-label="Play or pause">▶ Play</button>
+          <button id="step" aria-label="Next message">Step</button>
+          <button id="restart" aria-label="Restart">Restart</button>
+          <select id="speed" aria-label="Speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+          <div class="prog" aria-hidden="true"><i id="bar"></i></div>
+          <span class="count pix" id="count">0 / 0</span>
+        </div>
+      </div>
+    </div>
+    <aside>
+      <div class="card" aria-live="polite">
+        <h2 class="pix" id="chapterNo">Chapter</h2>
+        <p class="pix" id="chapterTitle">Press play</p>
+        <p id="chapterText">Eleven parties, one outbreak, and a few people who try to cheat.</p>
+      </div>
+      <div class="card">
+        <h2 class="pix">This message</h2>
+        <div id="now"><span class="note">Nothing in flight.</span></div>
+      </div>
+      <div class="card">
+        <h2 class="pix">What each one has learned</h2>
+        <div id="ledger"></div>
+      </div>
+      <div class="card">
+        <h2 class="pix">Chapters</h2>
+        <div id="chapters"></div>
+      </div>
+      <div class="card">
+        <h2 class="pix">Envelopes</h2>
+        <div class="legend" id="legend"></div>
+        <p class="note" style="margin:10px 0 0">Requests fly out; the answer flies back. A red envelope is a refusal
+          (an error code). Run it yourself: <code>python simulate.py --serve</code> regenerates the trace with fresh
+          keys and opens this page.</p>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script>
+"use strict";
+// ------------------------------------------------------------------ layout (logical pixels, 640 x 380)
+const W = 640, H = 380;
+const C = {
+  floorA:"#e9dcc0", floorB:"#e2d3b4", wall:"#5b4a6e", wallTop:"#7a678f", desk:"#8a5a3c", deskTop:"#a8714d",
+  screen:"#2a2433", glow:"#9be3e0", ink:"#2a2433", label:"#2a2433", paper:"#fffaf0", grass:"#9cc98a",
+  grassB:"#8fbd7d", path:"#d8c9a3"
+};
+const ROOMS = [
+  {id:"companies", x:4, y:24, w:150, h:352, title:"FOOD COMPANIES", floor:["#eadfc8","#e3d6bb"]},
+  {id:"idp", x:166, y:24, w:136, h:92, title:"DIGITAL IDENTITY", floor:["#dfe7f2","#d5dfee"]},
+  {id:"issuer", x:312, y:24, w:150, h:92, title:"ISSUER", floor:["#e8e0f0","#dfd5ea"]},
+  {id:"lab", x:472, y:24, w:164, h:92, title:"REFERENCE LAB", floor:["#e1f0ea","#d6e9e1"]},
+  {id:"relay", x:166, y:136, w:136, h:112, title:"RELAY (INDEPENDENT)", floor:["#f2e6d9","#ecdccb"]},
+  {id:"op", x:312, y:136, w:324, h:112, title:"PLATFORM OPERATOR", floor:["#e6e6e2","#dcdcd6"]},
+  {id:"cons", x:166, y:268, w:470, h:108, title:"CONSORTIUM MEMBERS (witnesses + trustees)", floor:["#efe3cf","#e8d9c0"]},
+];
+const SPOTS = {
+  idp:      {x:234, y:84,  shirt:"#3b6fb6", hair:"#3a2a1a", label:"SPID / CIE", sub:"identity provider"},
+  issuer:   {x:387, y:84,  shirt:"#7b4fa8", hair:"#1d1d1d", label:"Issuer", sub:"knows who, not what"},
+  lab:      {x:560, y:84,  shirt:"#2f8f6f", hair:"#c98b4b", label:"Laboratory", sub:"and the authority", coat:true},
+  relay:    {x:240, y:210, shirt:"#c0603a", hair:"#5a3a22", label:"Relay", sub:"sees who, not what"},
+  gateway:  {x:372, y:210, shirt:"#47617a", hair:"#2b2b2b", label:"Gateway", sub:"sees what, not who"},
+  platform: {x:478, y:210, shirt:"#3a7a9a", hair:"#6b4b2b", label:"Platform", sub:"records + log", server:true},
+  "member-1":{x:256, y:340, shirt:"#a0522d", hair:"#222", label:"Member A", sub:"regional authority"},
+  "member-2":{x:400, y:340, shirt:"#556b2f", hair:"#8b5a2b", label:"Member B", sub:"research institute"},
+  "member-3":{x:546, y:340, shirt:"#8b3a62", hair:"#d9b36c", label:"Member C", sub:"industry association"},
+};
+SPOTS.operator = SPOTS.platform;
+const BOARD = {x:596, y:182};       // public bulletin, on the operator's wall
+const CAT = {dairy:"#f2f2f2", meat:"#c0504d", fish:"#4f81bd", "ready-to-eat":"#f0a830", produce:"#6aa84f"};
+
+// ------------------------------------------------------------------ envelope kinds
+const KINDS = {
+  id:      {fill:"#cfe0ff", mark:"#3b6fb6", name:"ID token / login"},
+  blind:   {fill:"#bdbdbd", mark:"#555",    name:"blinded candidates"},
+  sealed:  {fill:"#b89ad9", mark:"#4b2a7a", name:"OHTTP ciphertext", lock:true},
+  record:  {fill:"#fffaf0", mark:"#2a2433", name:"record in clear"},
+  log:     {fill:"#cdeccf", mark:"#2f7a3a", name:"log head / proof"},
+  sig:     {fill:"#ffe08a", mark:"#b8860b", name:"cosignature"},
+  alert:   {fill:"#ffc38a", mark:"#b85a00", name:"sealed alert", lock:true},
+  request: {fill:"#f4b6b6", mark:"#8b1a1a", name:"disclosure request"},
+  escrow:  {fill:"#9fd3d0", mark:"#1f6b68", name:"escrow (to trustees)", lock:true},
+  key:     {fill:"#fff1a8", mark:"#8a6d00", name:"public key"},
+  msg:     {fill:"#eeeeee", mark:"#777",    name:"other"},
+  refused: {fill:"#ff6b6b", mark:"#fff",    name:"refused (4xx)"},
+};
+function kindOf(e){
+  const p = e.path;
+  if (e.to === "relay" || (e.from === "relay")) return "sealed";
+  if (e.to === "idp") return p === "/token" ? "id" : "key";
+  if (p.startsWith("/issue/")) return "blind";
+  if (p === "/key" || p === "/ohttp-keys") return "key";
+  if (p === "/cosign" || p === "/state") return "sig";
+  if (p.startsWith("/log/checkpoint")) return "sig";
+  if (p.startsWith("/log/")) return "log";
+  if (p === "/alerts" || p === "/bulletin") return "alert";
+  if (p === "/disclosure") return "request";
+  if (p.startsWith("/escrow/")) return "escrow";
+  if (p === "/submit" || p === "/records") return "record";
+  return "msg";
+}
+
+// ------------------------------------------------------------------ what each message means, and who sees what
+const kb = n => n < 1024 ? `${n} B` : `${(n/1024).toFixed(1)} kB`;
+function nameOf(a){ return SPOTS[a] ? SPOTS[a].label : a; }
+function explain(e){
+  const p = e.path, who = e.from, fail = e.status >= 400;
+  const S = (title, sees, failText) => ({title: fail && failText ? failText : title, sees});
+  if (e.to === "idp" && p === "/token") return S(`${who} logs in with its digital identity`,
+    [["Identity", "who logs in, for which company (VAT number)"], ["Issuer", "nothing yet"]]);
+  if (e.to === "idp") return S("The issuer fetches the identity provider's public keys, to check ID tokens", []);
+  if (p === "/key") return S(`${who} fetches the issuer's public key, and checks it is the one in log entry 0`,
+    [["Issuer", "that someone wants the key (everyone gets the same one)"]]);
+  if (p === "/issue/commit") return S(`${who} sends sealed candidates: 8 per token`,
+    [["Issuer", `who (from the ID token) and how many tokens`], ["Issuer", "not the tokens: every candidate is blinded"]]);
+  if (p === "/issue/open") return S(`${who} opens 7 candidates of 8; the issuer rebuilds them and blind-signs the 8th`,
+    [["Issuer", "7 discarded candidates, each naming this company in its escrow"], ["Issuer", "never the 8th, the one that will be used"]],
+    `${who}: an opened candidate names another company. Refused, issuance suspended`);
+  if (p === "/ohttp-keys") return S(`${who} fetches the gateway's encryption key, checked against log entry 0`, []);
+  if (e.to === "relay") return S(`${who} sends an encrypted request to the relay (${kb(e.req_bytes)})`,
+    [["Relay", "the company's network address"], ["Relay", "only ciphertext: not what, not to whom inside"]]);
+  if (who === "relay") return S("The relay forwards it, stripped of every header and address",
+    [["Gateway", "the relay's address only"], ["Gateway", "decrypts: next envelope shows the content"]]);
+  if (p === "/submit") return S(`A record arrives: cgMLST profile, coarse metadata, token, one-time alert key, escrow (${kb(e.req_bytes)})`,
+    [["Platform", "a valid, unused token: an authorised company, which one unknown"], ["Platform", "region and food category, generalised to ≥ 5 companies"]],
+    "Same token used twice: refused (409)");
+  if (p === "/bulletin") return S("A company downloads the whole public bulletin, through the relay",
+    [["Platform", "that someone downloads everything, like everyone"]]);
+  if (p === "/records") return S("The laboratory reads the new records and compares them with human cases",
+    [["Laboratory", "profiles and coarse metadata: no company"]]);
+  if (p === "/alerts") return S("The laboratory posts an alert, encrypted to the record's one-time key",
+    [["Everyone", "that an alert exists, not for whom"], ["Company", "only the right one can open it"]]);
+  if (p === "/disclosure") return S("The authority asks who sent one record. The request goes in the public log first",
+    [["Everyone", "the request and its reason, permanently"]]);
+  if (p === "/log/checkpoint") return S("The platform signs a new tree head and asks the members to cosign it", []);
+  if (p === "/state") return S(`The platform asks ${nameOf(e.to)} which head it cosigned last`, []);
+  if (p === "/cosign") return S(`${nameOf(e.to)} checks a consistency proof: does the new log extend the old one?`,
+    [[nameOf(e.to), "tree sizes and root hashes, no content"]],
+    `${nameOf(e.to)} refuses: the new head does not extend the one it signed. The log was rewritten`);
+  if (p.startsWith("/log/")) return S(`${nameOf(who)} checks the log: a head cosigned by the members, and a proof that an entry is in it`,
+    [["Platform", "that the log is being read: it is public"]]);
+  if (p.startsWith("/escrow/")) return S(`${nameOf(who)} fetches the escrow of that record and checks its hash in the log`,
+    [[nameOf(who), "ciphertext: one share needs this member's key, the name needs 2 shares"]]);
+  return S(`${who} → ${e.to} ${e.method} ${p}`, []);
+}
+
+// ------------------------------------------------------------------ state
+let trace = null, steps = [], si = 0, playing = false, speed = 1;
+let flights = [], bubbles = {}, pops = [], active = {}, chapterIx = -1, chapters = [], banner = null;
+let L = null;     // ledger
+const cv = document.getElementById("world"), ctx = cv.getContext("2d");
+
+function resetLedger(){
+  L = {issuer:{}, relay:new Set(), platform:0, refused:0, lab:0, alerts:0, cosigs:0, refusals:0, shares:0, notes:[]};
+}
+function setupCompanies(){
+  const ids = Object.keys(trace.companies);
+  ids.forEach((cid, i) => {
+    const c = trace.companies[cid];
+    SPOTS[cid] = {x:44, y:64 + i * 47, shirt:CAT[c.category] || "#999", hair:["#2b1b0e","#6b4b2b","#1d1d1d","#c98b4b","#3a2a1a","#8b5a2b","#222"][i % 7],
+      label:cid, sub:`${c.category}, ${c.region}`, company:true, cheater:!!c.cheater, positive:!!c.positive};
+  });
+}
+
+// Turn the flat event list into animation steps: nested calls (relay -> gateway -> platform)
+// fly forward one after the other, and their answers fly back in reverse.
+function buildSteps(events){
+  const out = [], stack = [];
+  const flush = () => { while (stack.length) out.push({type:"res", e:stack.pop()}); };
+  for (const e of events){
+    if (e.kind !== "http"){ flush(); out.push({type:e.kind, e}); continue; }
+    while (stack.length && stack[stack.length - 1].to !== e.from) out.push({type:"res", e:stack.pop()});
+    out.push({type:"req", e}); stack.push(e);
+  }
+  flush();
+  return out;
+}
+
+// ------------------------------------------------------------------ drawing helpers
+let S = 2;
+function resize(){
+  const r = cv.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  S = Math.max(1, (r.width || W * 2) * dpr / W);
+  cv.width = Math.round(W * S); cv.height = Math.round(H * S);
+  ctx.imageSmoothingEnabled = false;
+}
+const R = (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); };
+function text(t, x, y, size, color, align = "center", font = "pix"){
+  ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = "alphabetic";
+  ctx.font = font === "pix" ? `${size}px "Press Start 2P", ui-monospace, monospace` : `600 ${size}px system-ui, sans-serif`;
+  ctx.fillText(t, x, y);
+}
+function room(r){
+  for (let yy = r.y; yy < r.y + r.h; yy += 8) for (let xx = r.x; xx < r.x + r.w; xx += 8)
+    R(xx, yy, Math.min(8, r.x + r.w - xx), Math.min(8, r.y + r.h - yy), ((xx + yy) / 8) % 2 ? r.floor[0] : r.floor[1]);
+  R(r.x, r.y - 12, r.w, 12, C.wall); R(r.x, r.y - 12, r.w, 2, C.wallTop);
+  text(r.title, r.x + 5, r.y - 3, 5.5, "#f4ecd8", "left");
+  ctx.strokeStyle = "#00000022"; ctx.lineWidth = 1; ctx.strokeRect(r.x + .5, r.y - 12 + .5, r.w - 1, r.h + 11);
+}
+function scaled(s, fn){ const k = s.company ? 1.3 : 1.6; ctx.save(); ctx.translate(s.x, s.y); ctx.scale(k, k); fn(); ctx.restore(); }
+function person(s, t, busy){
+  const bob = busy ? Math.round(Math.sin(t / 90)) : Math.round(Math.sin(t / 600 + s.x) * .6);
+  scaled(s, () => {
+    const y = -20 + bob, body = s.coat ? "#f5f5f5" : s.shirt;
+    R(-5, y + 12, 10, 8, body);
+    if (s.coat) R(-1, y + 12, 2, 8, s.shirt);
+    R(-7, y + 13, 2, 5, body); R(5, y + 13, 2, 5, body);
+    R(-4, y + 3, 8, 9, "#f1c9a5");
+    R(-4, y + 2, 8, 3, s.hair); R(-5, y + 3, 1, 4, s.hair); R(4, y + 3, 1, 4, s.hair);
+    R(-2, y + 7, 1, 1, C.ink); R(1, y + 7, 1, 1, C.ink);
+    if (busy) R(-1, y + 10, 2, 1, "#a0522d");
+  });
+}
+function desk(s, t, busy){
+  scaled(s, () => {
+    R(-16, 0, 32, 4, C.deskTop); R(-16, 4, 32, 6, C.desk);
+    R(-14, 10, 3, 4, C.desk); R(11, 10, 3, 4, C.desk);
+    R(6, -9, 10, 8, C.screen); R(7, -8, 8, 6, busy ? C.glow : "#3d5a66"); R(10, -1, 2, 1, C.screen);
+    R(-13, -3, 7, 3, C.paper);
+  });
+}
+function plant(x, y){ R(x - 4, y - 7, 8, 7, "#a0522d"); R(x - 5, y - 8, 10, 2, "#8b4513");
+  R(x - 2, y - 20, 4, 12, "#3f8f3f"); R(x - 7, y - 16, 5, 4, "#4caf50"); R(x + 2, y - 18, 5, 4, "#4caf50"); R(x - 4, y - 24, 8, 5, "#5cbf60"); }
+function cabinet(x, y){ R(x - 7, y - 24, 14, 24, "#8d8f99"); R(x - 6, y - 23, 12, 22, "#a7a9b3");
+  for (let i = 0; i < 3; i++){ R(x - 6, y - 23 + i * 7.5, 12, 1, "#7b7d86"); R(x - 2, y - 20 + i * 7.5, 4, 1.5, "#5a5c64"); } }
+function shelf(x, y){ R(x - 14, y - 26, 28, 26, "#8a5a3c"); for (let i = 0; i < 3; i++) R(x - 13, y - 25 + i * 8, 26, 7, "#c9a46a");
+  const fl = ["#7bd389", "#f0a830", "#4f81bd", "#c0504d"];
+  for (let i = 0; i < 6; i++){ R(x - 11 + (i % 3) * 8, y - 23 + Math.floor(i / 3) * 8, 4, 5, fl[i % 4]); R(x - 10 + (i % 3) * 8, y - 25 + Math.floor(i / 3) * 8, 2, 2, "#e8e8e8"); } }
+function mailbag(x, y){ R(x - 7, y - 12, 14, 12, "#b5895a"); R(x - 5, y - 14, 10, 3, "#8a6238"); R(x - 3, y - 8, 6, 4, "#f4ecd8"); }
+function cooler(x, y){ R(x - 5, y - 10, 10, 10, "#e0e0e0"); R(x - 4, y - 24, 8, 14, "#7fc8f8"); R(x - 3, y - 22, 3, 10, "#b5e2ff"); R(x - 2, y - 6, 4, 2, "#555"); }
+function decor(){
+  plant(178, 112); cabinet(288, 112); plant(324, 112); cabinet(448, 112); shelf(496, 112); plant(624, 112);
+  mailbag(182, 244); mailbag(196, 244); plant(292, 244); plant(324, 244); cooler(424, 244); plant(626, 244);
+  plant(180, 372); plant(328, 372); plant(472, 372); plant(624, 372);
+  for (const r of ROOMS){ R(r.x + r.w / 2 - 8, r.y + r.h - 3, 16, 3, "#b9a98a"); }   // doormats
+}
+function serverRack(x, y, t){
+  R(x, y - 30, 22, 40, "#3b3f4a"); R(x + 1, y - 29, 20, 38, "#4a5060");
+  for (let i = 0; i < 6; i++){ R(x + 3, y - 26 + i * 6, 16, 4, "#2c303a"); R(x + 15, y - 25 + i * 6, 2, 2, (Math.floor(t / 300) + i) % 3 ? "#7bd389" : "#2f6b3a"); }
+  text("LOG", x + 11, y + 18, 5, C.label);
+}
+function board(x, y, n){
+  R(x - 18, y - 20, 36, 30, "#7a5230"); R(x - 16, y - 18, 32, 26, "#c9a46a");
+  for (let i = 0; i < Math.min(n, 8); i++) R(x - 14 + (i % 4) * 8, y - 16 + Math.floor(i / 4) * 12, 6, 9, "#ffc38a");
+  text("BULLETIN", x, y + 18, 5, C.label);
+}
+function shopSign(s){
+  R(s.x - 36, s.y - 24, 18, 14, CAT[trace.companies[s.label].category] || "#999");
+  R(s.x - 44, s.y - 22, 14, 3, "#ffffff66");
+  R(s.x - 28, s.y - 10, 2, 10, "#7a5230");
+  if (s.cheater) text("?", s.x - 27, s.y - 13, 6, "#b3261e");
+}
+function envelope(x, y, k, scale = 1){
+  const K = KINDS[k]; const w = 10 * scale, h = 7 * scale;
+  R(x - w / 2 + 1, y - h / 2 + 1, w, h, "#00000033");
+  R(x - w / 2, y - h / 2, w, h, K.fill);
+  ctx.strokeStyle = K.mark; ctx.lineWidth = .8;
+  ctx.beginPath(); ctx.moveTo(x - w / 2, y - h / 2); ctx.lineTo(x, y + .5 * scale); ctx.lineTo(x + w / 2, y - h / 2); ctx.stroke();
+  ctx.strokeRect(x - w / 2, y - h / 2, w, h);
+  if (K.lock){ R(x - 1.5 * scale, y, 3 * scale, 2.5 * scale, K.mark); }
+  if (k === "refused"){ ctx.strokeStyle = "#fff"; ctx.beginPath(); ctx.moveTo(x - 2, y - 2); ctx.lineTo(x + 2, y + 2); ctx.moveTo(x + 2, y - 2); ctx.lineTo(x - 2, y + 2); ctx.stroke(); }
+}
+function bubble(s, msg, alpha){
+  ctx.globalAlpha = alpha;
+  ctx.font = `600 7px system-ui, sans-serif`;
+  const words = msg.split(" "), lines = []; let cur = "";
+  for (const w of words){ if (ctx.measureText(cur + " " + w).width > 120 && cur){ lines.push(cur); cur = w; } else cur = cur ? cur + " " + w : w; }
+  lines.push(cur);
+  const bw = Math.min(130, Math.max(...lines.map(l => ctx.measureText(l).width)) + 10), bh = lines.length * 9 + 6;
+  let bx = s.x - bw / 2, by = s.y - (s.company ? 32 : 40) - bh;
+  bx = Math.max(4, Math.min(W - bw - 4, bx)); by = Math.max(14, by);
+  R(bx, by, bw, bh, "#ffffff"); ctx.strokeStyle = C.ink; ctx.lineWidth = 1; ctx.strokeRect(bx + .5, by + .5, bw - 1, bh - 1);
+  R(Math.max(bx + 4, Math.min(bx + bw - 8, s.x - 2)), by + bh, 4, 3, "#ffffff");
+  lines.forEach((l, i) => text(l, bx + 5, by + 10 + i * 9, 7, C.ink, "left", "sys"));
+  ctx.globalAlpha = 1;
+}
+function corridor(){
+  for (let yy = 0; yy < H; yy += 8) for (let xx = 0; xx < W; xx += 8) R(xx, yy, 8, 8, ((xx + yy) / 8) % 2 ? C.grass : C.grassB);
+  R(158, 0, 6, H, C.path); R(158, 124, W - 158, 6, C.path); R(158, 256, W - 158, 6, C.path);
+}
+
+// ------------------------------------------------------------------ frame
+function draw(t){
+  ctx.setTransform(S, 0, 0, S, 0, 0);
+  corridor();
+  ROOMS.forEach(room);
+  decor();
+  // fixed furniture
+  serverRack(522, 214, t); board(BOARD.x, BOARD.y, L ? L.alerts : 0);
+  // characters
+  for (const [id, s] of Object.entries(SPOTS)){
+    if (id === "operator") continue;
+    const busy = (active[id] || 0) > t;
+    desk(s, t, busy); person(s, t, busy);
+    if (s.company) shopSign(s);
+    if (s.company){
+      text(s.label, s.x + 26, s.y - 4, 5, C.label, "left");
+      text(s.sub, s.x + 26, s.y + 6, 6, "#5b4a6e", "left", "sys");
+      if (s.suspended) text("SUSPENDED", s.x + 26, s.y + 15, 4.5, "#b3261e", "left");
+    } else {
+      text(s.label, s.x, s.y + 27, 5.5, C.label);
+      text(s.sub, s.x, s.y + 35, 6, "#5b4a6e", "center", "sys");
+    }
+  }
+  // flights
+  const now = performance.now();
+  flights = flights.filter(f => now < f.t0 + f.dur + 60);
+  for (const f of flights){
+    const u = Math.min(1, Math.max(0, (now - f.t0) / f.dur));
+    const e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+    const x = f.a.x + (f.b.x - f.a.x) * e, y = f.a.y - 20 + (f.b.y - f.a.y) * e - Math.sin(Math.PI * e) * f.arc;
+    ctx.globalAlpha = .25; ctx.setLineDash([2, 2]); ctx.strokeStyle = KINDS[f.k].mark;
+    ctx.beginPath(); ctx.moveTo(f.a.x, f.a.y - 20); ctx.lineTo(x, y); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+    envelope(x, y, f.k, f.big ? 1.8 : 1.4);
+  }
+  pops = pops.filter(p => now < p.t0 + 900);
+  for (const p of pops){ const a = 1 - (now - p.t0) / 900; ctx.globalAlpha = a; text(p.txt, p.x, p.y - 30 - (1 - a) * 8, 7, p.color); ctx.globalAlpha = 1; }
+  for (const [id, b] of Object.entries(bubbles)){
+    const left = b.until - now; if (left <= 0){ delete bubbles[id]; continue; }
+    const s = SPOTS[id]; if (s) bubble(s, b.text, Math.min(1, left / 300));
+  }
+  if (banner && now < banner.until){
+    const a = Math.min(1, (banner.until - now) / 400, (now - banner.t0) / 250);
+    ctx.globalAlpha = a * .92; R(0, H / 2 - 26, W, 52, "#2a2433"); ctx.globalAlpha = a;
+    text(banner.no, W / 2, H / 2 - 8, 6, "#9be3e0"); text(banner.title, W / 2, H / 2 + 10, 9, "#f4ecd8");
+    ctx.globalAlpha = 1;
+  }
+}
+function loop(t){ draw(t); tick(); requestAnimationFrame(loop); }
+
+// ------------------------------------------------------------------ playing steps
+let nextAt = 0;
+function dur(base){ return base / speed; }
+function spot(a){ return SPOTS[a] || SPOTS.platform; }
+function runStep(st){
+  const now = performance.now(), e = st.e;
+  if (st.type === "chapter"){
+    chapterIx = chapters.indexOf(st); markChapter();
+    document.getElementById("chapterNo").textContent = `Chapter ${chapterIx + 1} of ${chapters.length}`;
+    document.getElementById("chapterTitle").textContent = e.title;
+    document.getElementById("chapterText").textContent = e.text;
+    banner = {no:`CHAPTER ${chapterIx + 1}`, title:e.title.toUpperCase(), t0:now, until:now + dur(1900)};
+    return dur(2100);
+  }
+  if (st.type === "say"){
+    bubbles[e.who] = {text:e.text, until:now + dur(2600)};
+    active[e.who] = now + dur(600);
+    return dur(1300);
+  }
+  const a = spot(st.type === "req" ? e.from : e.to), b = spot(st.type === "req" ? e.to : e.from);
+  const k = st.type === "res" && e.status >= 400 ? "refused" : kindOf(e);
+  const quick = e.method === "GET" && e.path.startsWith("/log/");
+  const d = dur(st.type === "req" ? (quick ? 380 : 720) : (quick ? 260 : 460));
+  const big = (st.type === "req" ? e.req_bytes : e.res_bytes) > 4000;
+  flights.push({a, b, k, t0:now, dur:d, arc:Math.min(40, 10 + Math.hypot(b.x - a.x, b.y - a.y) / 8), big});
+  active[st.type === "req" ? e.from : e.to] = now + d;
+  if (st.type === "req"){ showNow(e); }
+  else {
+    learn(e);
+    if (e.status >= 400) pops.push({x:b.x, y:b.y, t0:now + d, txt:`${e.status} ✗`, color:"#b3261e"});
+  }
+  return d + dur(60);
+}
+function tick(){
+  if (!playing || !trace) return;
+  if (performance.now() < nextAt) return;
+  if (si >= steps.length){ playing = false; updatePlay(); return; }
+  nextAt = performance.now() + runStep(steps[si++]);
+  progress();
+}
+function stepOnce(){
+  if (!trace || si >= steps.length) return;
+  let d = runStep(steps[si++]);
+  // skip quickly through answers so one click shows one meaningful request
+  while (si < steps.length && steps[si].type === "res"){ d = Math.max(d, runStep(steps[si++])); }
+  nextAt = performance.now() + d; progress();
+}
+function showNow(e){
+  const x = explain(e), fail = e.status >= 400;
+  const sees = x.sees.map(([w, t]) => `<li><b>${w}</b><span>${t}</span></li>`).join("");
+  document.getElementById("now").innerHTML =
+    `<div class="what ${fail ? "err" : ""}">${x.title}</div>` +
+    `<div class="meta">${nameOf(e.from)} → ${nameOf(e.to)} · ${e.method} ${e.path} · ${kb(e.req_bytes)} → ${e.status ?? "?"}, ${kb(e.res_bytes)}</div>` +
+    (sees ? `<ul class="sees">${sees}</ul>` : "");
+}
+function learn(e){
+  const p = e.path;
+  if (p === "/issue/open" && e.status === 200){ L.issuer[e.from] = (L.issuer[e.from] || 0) + 2; }
+  if (p === "/issue/open" && e.status >= 400){ if (SPOTS[e.from]) SPOTS[e.from].suspended = true; }
+  if (e.to === "relay") L.relay.add(e.from);
+  if (p === "/submit"){ if (e.status === 200) L.platform++; else L.refused++; }
+  if (p === "/records") L.lab++;
+  if (p === "/alerts") L.alerts++;
+  if (p === "/cosign"){ if (e.status === 200) L.cosigs++; else L.refusals++; }
+  if (p.startsWith("/escrow/") && e.from.startsWith("member")) L.shares++;
+  renderLedger();
+}
+function renderLedger(){
+  const iss = Object.entries(L.issuer);
+  const rows = [
+    ["Issuer", iss.length ? `${iss.length} companies, ${iss.reduce((s, [, n]) => s + n, 0)} tokens signed. Never sees a token.` : "nothing yet"],
+    ["Relay", L.relay.size ? `${L.relay.size} company addresses sent ciphertext. Read: nothing.` : "nothing yet"],
+    ["Platform", `${L.platform} records accepted, ${L.refused} refused. Knows no company.`],
+    ["Laboratory", `${L.lab ? "read the records" : "nothing yet"}; ${L.alerts} sealed alerts posted.`],
+    ["Members", `${L.cosigs} cosignatures, ${L.refusals} refusals; escrow checked ${L.shares} times.`],
+  ];
+  document.getElementById("ledger").innerHTML = rows.map(([a, b]) => `<div><b>${a}</b><span>${b}</span></div>`).join("");
+}
+function progress(){
+  document.getElementById("bar").style.width = `${100 * si / Math.max(1, steps.length)}%`;
+  const n = steps.slice(0, si).filter(s => s.type === "req").length, tot = steps.filter(s => s.type === "req").length;
+  document.getElementById("count").textContent = `${n} / ${tot} msgs`;
+}
+function markChapter(){ document.querySelectorAll("#chapters button").forEach((b, i) => b.classList.toggle("on", i === chapterIx)); }
+function updatePlay(){ document.getElementById("play").textContent = playing ? "❚❚ Pause" : "▶ Play"; }
+function restart(to = 0){
+  resetLedger(); flights = []; bubbles = {}; pops = []; banner = null; si = 0; chapterIx = -1;
+  Object.values(SPOTS).forEach(s => s.suspended = false);
+  // fast-forward silently to step `to`
+  while (si < to){ const st = steps[si++]; if (st.type === "res") learn(st.e); if (st.type === "chapter"){ chapterIx = chapters.indexOf(st); } }
+  if (chapterIx >= 0){ const e = chapters[chapterIx].e;
+    document.getElementById("chapterNo").textContent = `Chapter ${chapterIx + 1} of ${chapters.length}`;
+    document.getElementById("chapterTitle").textContent = e.title; document.getElementById("chapterText").textContent = e.text; }
+  markChapter(); renderLedger(); progress(); nextAt = 0;
+}
+
+// ------------------------------------------------------------------ boot
+document.getElementById("play").onclick = () => { if (si >= steps.length) restart(); playing = !playing; nextAt = 0; updatePlay(); };
+document.getElementById("step").onclick = () => { playing = false; updatePlay(); stepOnce(); };
+document.getElementById("restart").onclick = () => { restart(); };
+document.getElementById("speed").onchange = ev => { speed = +ev.target.value; };
+document.addEventListener("keydown", ev => {
+  if (ev.target.tagName === "SELECT") return;
+  if (ev.key === " "){ ev.preventDefault(); document.getElementById("play").click(); }
+  if (ev.key === "ArrowRight") document.getElementById("step").click();
+});
+window.addEventListener("resize", resize);
+
+fetch("sim/trace.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(t => {
+  trace = t; setupCompanies(); steps = buildSteps(t.events);
+  chapters = steps.filter(s => s.type === "chapter");
+  const box = document.getElementById("chapters");
+  chapters.forEach((c, i) => {
+    const b = document.createElement("button"); b.textContent = `${i + 1}. ${c.e.title}`;
+    b.onclick = () => { restart(steps.indexOf(c)); playing = true; updatePlay(); };
+    box.append(b);
+  });
+  resetLedger(); renderLedger(); progress();
+  const m = location.hash.match(/at=(\d+)/);
+  if (m){ restart(Math.min(steps.length - 1, +m[1])); playing = true; updatePlay(); }
+  else if (location.hash.includes("play")){ playing = true; updatePlay(); }
+}).catch(() => { document.getElementById("fail").style.display = "block"; });
+
+resize(); resetLedger(); legendSimple(); requestAnimationFrame(loop);
+
+function legendSimple(){
+  const el = document.getElementById("legend");
+  for (const [k, v] of Object.entries(KINDS)){
+    if (k === "msg") continue;
+    const span = document.createElement("span"), c = document.createElement("canvas");
+    c.width = 48; c.height = 36;
+    span.append(c, document.createTextNode(v.name)); el.append(span);
+    const g = c.getContext("2d"), K = v;
+    g.setTransform(4, 0, 0, 4, 0, 0);
+    g.fillStyle = K.fill; g.fillRect(1, 1.5, 10, 7);
+    g.strokeStyle = K.mark; g.lineWidth = .6; g.strokeRect(1, 1.5, 10, 7);
+    g.beginPath(); g.moveTo(1, 1.5); g.lineTo(6, 5.5); g.lineTo(11, 1.5); g.stroke();
+    if (K.lock){ g.fillStyle = K.mark; g.fillRect(4.5, 5.5, 3, 2.5); }
+  }
+}
+</script>
+</body>
+</html>

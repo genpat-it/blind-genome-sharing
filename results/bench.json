@@ -3,40 +3,71 @@
  "rsa": [
   {
    "bits": 2048,
-   "blind_ms": 0.42617227882146835,
-   "blind_sign_ms": 5.393157713115215,
-   "finalize_ms": 0.047773122787475586,
-   "verify_ms": 0.038271769881248474,
+   "blind_ms": 0.4190448671579361,
+   "blind_sign_ms": 5.08227851241827,
+   "finalize_ms": 0.047866255044937134,
+   "verify_ms": 0.03834813833236694,
    "token_bytes": 320
   },
   {
    "bits": 3072,
-   "blind_ms": 0.8492739871144295,
-   "blind_sign_ms": 15.912954695522785,
-   "finalize_ms": 0.07570721209049225,
-   "verify_ms": 0.057268887758255005,
+   "blind_ms": 0.8341697975993156,
+   "blind_sign_ms": 16.085058450698853,
+   "finalize_ms": 0.0753011554479599,
+   "verify_ms": 0.05710311233997345,
    "token_bytes": 448
   },
   {
    "bits": 4096,
-   "blind_ms": 1.4144284650683403,
-   "blind_sign_ms": 35.687584429979324,
-   "finalize_ms": 0.11398270726203918,
-   "verify_ms": 0.08297152817249298,
+   "blind_ms": 1.4008739963173866,
+   "blind_sign_ms": 36.47001087665558,
+   "finalize_ms": 0.11406838893890381,
+   "verify_ms": 0.08285790681838989,
    "token_bytes": 576
   }
  ],
  "hpke": {
-  "seal_ms": 0.09749829769134521,
-  "open_ms": 0.09582191705703735,
-  "trial_fail_ms": 0.09707920253276825,
+  "seal_ms": 0.09769201278686523,
+  "open_ms": 0.09545311331748962,
+  "trial_fail_ms": 0.0968538224697113,
   "alert_bytes": 213
  },
+ "escrow": {
+  "candidate_ms": 0.9451592341065407,
+  "check_opening_ms": 0.9388597682118416,
+  "open_share_ms": 0.10497309267520905,
+  "reveal_ms": 0.023793429136276245,
+  "blob_bytes": 1343,
+  "trustees": 5,
+  "t": 3,
+  "k": 8
+ },
+ "merkle": {
+  "1000": {
+   "root_s": 0.004491640254855156,
+   "inclusion_hashes": 10,
+   "consistency_hashes": 9,
+   "verify_inclusion_ms": 0.012595206499099731,
+   "verify_consistency_ms": 0.014554709196090698
+  },
+  "100000": {
+   "root_s": 0.15407085418701172,
+   "inclusion_hashes": 17,
+   "consistency_hashes": 14,
+   "verify_inclusion_ms": 0.01819431781768799,
+   "verify_consistency_ms": 0.018192455172538757
+  }
+ },
  "e2e": {
-  "enrol_per_token_ms": 6.909990068525076,
-  "submit_ms": 5.028723739087582,
-  "lab_100rec_x_1000clin_s": 5.694015521556139,
-  "scan_1000alerts_50keys_s": 4.070140907540917,
-  "record_json_bytes": 6695
+  "enrol_per_token_escrow_ms": 20.418557915836573,
+  "enrol_per_token_plain_ms": 6.879617869853973,
+  "submit_direct_ms": 5.337842740118504,
+  "submit_ohttp_ms": 12.325795367360115,
+  "checkpoint_3_witnesses_ms": 26.702210307121277,
+  "verify_receipts_per_record_ms": 22.199781090021133,
+  "lab_200rec_x_1000clin_s": 11.372025543823838,
+  "scan_1000alerts_50keys_s": 4.052413376048207,
+  "record_json_bytes": 6690,
+  "log_entries": 201
  }
 }
