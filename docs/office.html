@@ -511,7 +511,10 @@ function restart(to = 0){
   resetLedger(); flights = []; bubbles = {}; pops = []; banner = null; si = 0; chapterIx = -1;
   Object.values(SPOTS).forEach(s => s.suspended = false);
   // fast-forward silently to step `to`
-  while (si < to){ const st = steps[si++]; if (st.type === "res") learn(st.e); if (st.type === "chapter"){ chapterIx = chapters.indexOf(st); } }
+  let last = null;
+  while (si < to){ const st = steps[si++]; if (st.type === "res") learn(st.e); if (st.type === "req") last = st.e;
+    if (st.type === "chapter"){ chapterIx = chapters.indexOf(st); last = null; } }
+  if (last) showNow(last); else document.getElementById("now").innerHTML = '<span class="note">Nothing in flight.</span>';
   if (chapterIx >= 0){ const e = chapters[chapterIx].e;
     document.getElementById("chapterNo").textContent = `Chapter ${chapterIx + 1} of ${chapters.length}`;
     document.getElementById("chapterTitle").textContent = e.title; document.getElementById("chapterText").textContent = e.text; }
