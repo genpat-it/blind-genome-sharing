@@ -8,6 +8,8 @@ cosigned by the consortium members suffice.
 - The protocol step by step: [project page](https://genpat-it.github.io/blind-genome-sharing/)
 - Every message of a real run, animated: [the office](https://genpat-it.github.io/blind-genome-sharing/office.html)
 
+[![The protocol in one minute: every envelope is a real message of a run](docs/media/office.gif)](https://genpat-it.github.io/blind-genome-sharing/office.html#story)
+
 **This is a proof of concept on synthetic data. It is not for production use.**
 
 ```bash
@@ -15,6 +17,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python demo.py               # end-to-end scenario, all services in one process, ~20 s
 .venv/bin/python -m pytest -q          # 217 tests, including the RFC test vectors
 .venv/bin/python simulate.py --serve   # record a fresh run and watch it in the office
+.venv/bin/python scripts/make_gif.py    # turn its one-minute version into docs/media/office.gif
 ```
 
 Every party as its own container (issuer, platform, OHTTP gateway and relay, three witnesses,

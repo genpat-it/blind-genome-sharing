@@ -81,7 +81,8 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background
      the proof of concept ran <code>simulate.py</code>, with its real size and answer. On the right is what
      each party can see, and what it has learned so far.</p>
   <nav><a href="./">← The protocol step by step</a><a href="https://github.com/genpat-it/blind-genome-sharing">GitHub</a>
-    <a href="https://github.com/genpat-it/blind-genome-sharing/blob/main/simulate.py">simulate.py</a></nav>
+    <a href="https://github.com/genpat-it/blind-genome-sharing/blob/main/simulate.py">simulate.py</a>
+    <a href="office.html#story" onclick="setTimeout(() => location.reload(), 0)">One-minute version</a><a href="office.html" onclick="setTimeout(() => location.reload(), 0)">Full run</a></nav>
 </header>
 
 <main class="wrap">
@@ -132,7 +133,10 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background
 <script>
 "use strict";
 // ------------------------------------------------------------------ layout (logical pixels, 640 x 380)
-const W = 640, H = 380;
+const STORY = location.hash.includes("story"), CAPTURE = location.hash.includes("capture");
+const W = 640, H = STORY ? 440 : 380;
+let virt = null;
+const clock = () => virt ?? performance.now();
 const C = {
   floorA:"#e9dcc0", floorB:"#e2d3b4", wall:"#5b4a6e", wallTop:"#7a678f", desk:"#8a5a3c", deskTop:"#a8714d",
   screen:"#2a2433", glow:"#9be3e0", ink:"#2a2433", label:"#2a2433", paper:"#fffaf0", grass:"#9cc98a",
@@ -274,7 +278,7 @@ let S = 2;
 function resize(){
   const r = cv.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
-  S = Math.max(1, (r.width || W * 2) * dpr / W);
+  S = CAPTURE ? 1.5 : Math.max(1, (r.width || W * 2) * dpr / W);
   cv.width = Math.round(W * S); cv.height = Math.round(H * S);
   ctx.imageSmoothingEnabled = false;
 }
@@ -397,7 +401,7 @@ function draw(t){
     }
   }
   // flights
-  const now = performance.now();
+  const now = clock();
   flights = flights.filter(f => now < f.t0 + f.dur + 60);
   for (const f of flights){
     const u = Math.min(1, Math.max(0, (now - f.t0) / f.dur));
@@ -413,6 +417,7 @@ function draw(t){
     const left = b.until - now; if (left <= 0){ delete bubbles[id]; continue; }
     const s = SPOTS[id]; if (s) bubble(s, b.text, Math.min(1, left / 300));
   }
+  if (STORY) caption(now);
   if (banner && now < banner.until){
     const a = Math.min(1, (banner.until - now) / 400, (now - banner.t0) / 250);
     ctx.globalAlpha = a * .92; R(0, H / 2 - 26, W, 52, "#2a2433"); ctx.globalAlpha = a;
@@ -422,21 +427,81 @@ function draw(t){
 }
 function loop(t){ draw(t); tick(); requestAnimationFrame(loop); }
 
+// ------------------------------------------------------------------ story mode: one company followed end to end
+const STORY_CAPTIONS = [
+  ["The consortium opens the log", "Entry 0: the keys everyone must use. The three members cosign it."],
+  ["A company logs in and gets tokens", "8 sealed envelopes per token: the issuer opens 7, signs the 8th blind."],
+  ["Someone tries to cheat", "An opened envelope names another company: caught, suspended."],
+  ["Anonymous submission", "Through the relay: the relay sees who, the gateway sees what. Nobody sees both."],
+  ["The lab finds a cluster", "The profile matches human cases: a sealed alert goes on the public board."],
+  ["Only one company can read it", "Everyone downloads every alert; only the right key opens it."],
+  ["The consortium cosigns the log", "Each member checks the log only grew, then signs."],
+  ["Disclosure, only in the open", "The request goes in the log first. Two members of three agree."],
+  ["Someone tries to rewrite history", "The log no longer extends what was signed: all members refuse."],
+];
+function caption(now){
+  const y0 = 384;
+  R(0, y0, W, H - y0, "#2a2433");
+  const c = chapterIx >= 0 ? STORY_CAPTIONS[chapterIx] || [chapters[chapterIx].e.title, ""] : ["Share the genome, not the name", "Anonymous, authorised sharing of pathogen genomes"];
+  R(10, y0 + 8, 30, 40, "#ffd166"); ctx.strokeStyle = "#1b1622"; ctx.lineWidth = 2; ctx.strokeRect(10, y0 + 8, 30, 40);
+  text(chapterIx >= 0 ? String(chapterIx + 1) : "!", 25, y0 + 35, 14, "#1b1622");
+  text(c[0], 52, y0 + 25, 10, "#ffd166", "left");
+  text(c[1], 52, y0 + 44, 10, "#f4ecd8", "left", "sys");
+  text("genpat-it.github.io/blind-genome-sharing", W - 8, H - 4, 5, "#9be3e0", "right");
+}
+function storySteps(all){
+  const keep = new Set(), cos = trace.companies;
+  const ids = Object.keys(cos);
+  const hero = ids.find(c => cos[c].positive), cheat = ids.find(c => cos[c].cheater), other = ids.find(c => !cos[c].positive && !cos[c].cheater);
+  const ok = a => !trace.companies[a] || a === hero || a === cheat || a === other;
+  // a relay chain (company -> relay -> gateway -> platform) that only reads the log is dropped whole
+  const drop = new Set(), carry = new Set();
+  for (let i = 0; i < all.length; i++){
+    const st = all[i];
+    if (st.type !== "req" || st.e.to !== "relay") continue;
+    const chain = [st.e];
+    for (let j = i + 1; j < all.length && chain.length < 3; j++) if (all[j].type === "req") chain.push(all[j].e);
+    const inner = chain[chain.length - 1];
+    if (inner.from === "gateway" && inner.path.startsWith("/log/")) chain.forEach(e => drop.add(e));
+    if (inner.status >= 400 || inner.path === "/bulletin") chain.forEach(e => carry.add(e));
+  }
+  const out = [];
+  for (const st of all){
+    const e = st.e;
+    if (drop.has(e)) continue;
+    if (st.type === "say"){ if (ok(e.who)) out.push(st); continue; }
+    if (st.type === "chapter"){ out.push(st); continue; }
+    const actor = e.from;
+    if (!ok(actor) || (trace.companies[e.to] && !ok(e.to))) continue;
+    if (e.path.startsWith("/log/") && e.method === "GET") continue;      // routine log checks
+    if (e.path === "/state" || e.path === "/ohttp-keys" || e.path === "/key") continue;
+    out.push(st);
+  }
+  // keep only the answers whose request survived, so every envelope flies out and back
+  const reqs = new Set(out.filter(s => s.type === "req").map(s => s.e));
+  const tells = e => e.status >= 400 || ["/issue/open", "/token", "/cosign", "/bulletin"].includes(e.path) || e.path.startsWith("/escrow/");
+  return out.filter(s => s.type !== "res" || (reqs.has(s.e) && (tells(s.e) || carry.has(s.e))));
+}
+window.__frame = t => { virt = t; tick(); draw(t); return cv.toDataURL("image/png"); };
+window.__done = () => si >= steps.length && flights.length === 0 && Object.keys(bubbles).length === 0;
+
 // ------------------------------------------------------------------ playing steps
 let nextAt = 0;
 function dur(base){ return base / speed; }
 function spot(a){ return SPOTS[a] || SPOTS.platform; }
 function runStep(st){
-  const now = performance.now(), e = st.e;
+  const now = clock(), e = st.e;
   if (st.type === "chapter"){
     chapterIx = chapters.indexOf(st); markChapter();
     document.getElementById("chapterNo").textContent = `Chapter ${chapterIx + 1} of ${chapters.length}`;
     document.getElementById("chapterTitle").textContent = e.title;
     document.getElementById("chapterText").textContent = e.text;
+    if (STORY){ banner = {no:`CHAPTER ${chapterIx + 1}`, title:(STORY_CAPTIONS[chapterIx] || [e.title])[0].toUpperCase(), t0:now, until:now + 1150}; return 1300; }
     banner = {no:`CHAPTER ${chapterIx + 1}`, title:e.title.toUpperCase(), t0:now, until:now + dur(1900)};
     return dur(2100);
   }
   if (st.type === "say"){
+    if (STORY){ bubbles[e.who] = {text:e.text, until:now + 2600}; active[e.who] = now + 500; return 800; }
     bubbles[e.who] = {text:e.text, until:now + dur(2600)};
     active[e.who] = now + dur(600);
     return dur(1300);
@@ -451,15 +516,15 @@ function runStep(st){
   if (st.type === "req"){ showNow(e); }
   else {
     learn(e);
-    if (e.status >= 400) pops.push({x:b.x, y:b.y, t0:now + d, txt:`${e.status} ✗`, color:"#b3261e"});
+    if (e.status >= 400) pops.push({x:b.x, y:b.y, t0:now + d, txt:`${e.status} NO!`, color:"#b3261e"});
   }
   return d + dur(60);
 }
 function tick(){
   if (!playing || !trace) return;
-  if (performance.now() < nextAt) return;
+  if (clock() < nextAt) return;
   if (si >= steps.length){ playing = false; updatePlay(); return; }
-  nextAt = performance.now() + runStep(steps[si++]);
+  nextAt = clock() + runStep(steps[si++]);
   progress();
 }
 function stepOnce(){
@@ -467,7 +532,7 @@ function stepOnce(){
   let d = runStep(steps[si++]);
   // skip quickly through answers so one click shows one meaningful request
   while (si < steps.length && steps[si].type === "res"){ d = Math.max(d, runStep(steps[si++])); }
-  nextAt = performance.now() + d; progress();
+  nextAt = clock() + d; progress();
 }
 function showNow(e){
   const x = explain(e), fail = e.status >= 400;
@@ -535,6 +600,7 @@ window.addEventListener("resize", resize);
 
 fetch("sim/trace.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(t => {
   trace = t; setupCompanies(); steps = buildSteps(t.events);
+  if (STORY){ steps = storySteps(steps); speed = 4.5; playing = true; updatePlay(); nextAt = (CAPTURE ? 0 : performance.now()) + 1800; }
   chapters = steps.filter(s => s.type === "chapter");
   const box = document.getElementById("chapters");
   chapters.forEach((c, i) => {
@@ -548,7 +614,8 @@ fetch("sim/trace.json").then(r => { if (!r.ok) throw new Error(r.status); return
   else if (location.hash.includes("play")){ playing = true; updatePlay(); }
 }).catch(() => { document.getElementById("fail").style.display = "block"; });
 
-resize(); resetLedger(); legendSimple(); requestAnimationFrame(loop);
+resize(); resetLedger(); legendSimple(); if (!CAPTURE) requestAnimationFrame(loop);
+window.__ready = () => !!trace;
 
 function legendSimple(){
   const el = document.getElementById("legend");
